@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Poetry
+.venv
+poetry.lock
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+test_images/
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.avi
+
+# Models and weights (can be huge!)
+*.pth
+*.pt
+*.h5
+*.ckpt
+models/
+weights/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# Keys
+*.key
+*.pem
+private_key.bin
+public_key.bin
+eval_key.bin
+
+# Node modules (if any JS testing)
+node_modules/
+frontend/node_modules/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Docker
+.dockerignore

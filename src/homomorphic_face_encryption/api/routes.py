@@ -186,9 +186,13 @@ def get_token():
 @consent_warning(ConsentPurpose.AUTHENTICATION, warning_days=14)
 def register_face():
     """
-    Register a user's face embedding (encrypted).
+    Register a user's face embedding.
     
-    Requires AUTHENTICATION consent.
+    REAL IMPLEMENTATION:
+    1. Decode base64 image
+    2. Detect face using MTCNN
+    3. Extract 512D embedding using FaceNet
+    4. Store embedding in database
     
     Request Body:
         {
@@ -198,16 +202,10 @@ def register_face():
     Response:
         {
             "message": "Face registered successfully",
-            "template_id": "uuid"
+            "template_id": "uuid",
+            "face_detected": true,
+            "embedding_size": 512
         }
-    
-    Flow:
-        1. Verify consent (handled by middleware)
-        2. Extract face from image (MTCNN)
-        3. Generate embedding (FaceNet)
-        4. Encrypt embedding (CKKS)
-        5. Store encrypted template
-        6. Create audit log
     """
     try:
         data = request.get_json()
@@ -230,38 +228,48 @@ def register_face():
         if not user:
             return jsonify({"error": "User not found"}), 404
         
-        # TODO: Implement actual face processing
-        # For now, create a placeholder template
+        # ============================================================
+        # REAL FACE PROCESSING
+        # ============================================================
         
-        # Import crypto module (lazy import to avoid circular deps)
-        try:
-            from ..crypto.ckks_encryptor import CKKSEncryptor
-            from ..biometric.embedding_extractor import EmbeddingExtractor
-            
-            # Initialize encryptor
-            encryptor = CKKSEncryptor()
-            encryptor.setup_context()
-            encryptor.generate_keys()
-            
-            # For demo: generate random embedding
-            import numpy as np
-            demo_embedding = np.random.randn(512).astype(np.float32).tolist()
-            
-            # Encrypt embedding
-            ciphertext = encryptor.encrypt_embedding(demo_embedding)
-            
-            # Serialize ciphertext (placeholder)
-            encrypted_data = b"CKKS_ENCRYPTED_TEMPLATE_PLACEHOLDER_" + bytes(16000)
-        except ImportError as e:
-            logger.warning(f"Crypto module not available: {e}")
-            # Fallback for testing
-            import os
-            encrypted_data = os.urandom(16 * 1024)
+        from ..biometric.face_service import get_face_service
+        import json
+        
+        face_service = get_face_service()
+        
+        # Process image: detect face and extract embedding
+        success, result = face_service.process_image(image_data)
+        
+        if not success:
+            create_audit_log(
+                user_id=user_id,
+                action=AuditAction.ENROLL,
+                success=False,
+                metadata={"error": result}
+            )
+            return jsonify({
+                "error": result,
+                "face_detected": False
+            }), 400
+        
+        embedding = result  # numpy array of shape (512,)
+        
+        # Serialize embedding as JSON (storing as bytes)
+        embedding_json = json.dumps(embedding.tolist())
+        encrypted_data = embedding_json.encode('utf-8')
         
         # Get encryption parameters hash
         params_hash = generate_encryption_params_hash()
         
-        # Create biometric template
+        # Deactivate old templates (optional: keep only latest)
+        old_templates = db.query(BiometricTemplate).filter_by(
+            user_id=user_id,
+            is_active=True
+        ).all()
+        for old in old_templates:
+            old.is_active = False
+        
+        # Create new biometric template
         template = BiometricTemplate(
             user_id=user_id,
             encrypted_embedding=encrypted_data,
@@ -279,7 +287,8 @@ def register_face():
             success=True,
             metadata={
                 "template_id": str(template.id),
-                "template_size": len(encrypted_data),
+                "embedding_size": len(embedding),
+                "embedding_norm": float(sum(x**2 for x in embedding.tolist())**0.5),
                 "params_hash": params_hash
             }
         )
@@ -288,9 +297,13 @@ def register_face():
         user.last_authentication = datetime.now(timezone.utc)
         db.commit()
         
+        logger.info(f"Face enrolled successfully: user={user_id}, template={template.id}")
+        
         return jsonify({
             "message": "Face registered successfully",
             "template_id": str(template.id),
+            "face_detected": True,
+            "embedding_size": len(embedding),
             "encryption_params_hash": params_hash
         }), 201
         
@@ -302,7 +315,8 @@ def register_face():
             success=False,
             error_message=str(e)
         )
-        return jsonify({"error": "Registration failed"}), 500
+        return jsonify({"error": f"Registration failed: {str(e)}"}), 500
+
 
 
 # ============================================================================
@@ -314,9 +328,14 @@ def register_face():
 @consent_required(ConsentPurpose.AUTHENTICATION)
 def verify_face():
     """
-    Verify a face against stored encrypted embeddings.
+    Verify a face against stored embeddings.
     
-    Requires AUTHENTICATION consent.
+    REAL IMPLEMENTATION:
+    1. Decode base64 image
+    2. Detect face using MTCNN
+    3. Extract 512D embedding using FaceNet
+    4. Compare with stored embeddings using Euclidean distance
+    5. Return match result
     
     Request Body:
         {
@@ -327,23 +346,16 @@ def verify_face():
         {
             "authenticated": true,
             "user_id": "uuid",
-            "confidence": 0.95
+            "confidence": 0.95,
+            "distance": 0.45
         }
     
     Response (no match):
         {
             "authenticated": false,
-            "message": "No match found"
+            "message": "Face does not match",
+            "confidence": 0.25
         }
-    
-    Flow:
-        1. Verify consent (handled by middleware)
-        2. Extract face from image
-        3. Generate embedding
-        4. Encrypt query embedding
-        5. Compute encrypted distance to stored templates
-        6. Decrypt distances and find match
-        7. Create audit log
     """
     try:
         data = request.get_json()
@@ -377,11 +389,61 @@ def verify_face():
                 "message": "No biometric templates found. Please register first."
             }), 404
         
-        # TODO: Implement actual face verification with homomorphic comparison
-        # For now, simulate successful authentication
+        # ============================================================
+        # REAL FACE PROCESSING
+        # ============================================================
         
-        authenticated = True  # Placeholder
-        confidence = 0.95  # Placeholder
+        from ..biometric.face_service import get_face_service
+        import json
+        import numpy as np
+        
+        face_service = get_face_service()
+        
+        # Process input image: detect face and extract embedding
+        success, result = face_service.process_image(image_data)
+        
+        if not success:
+            create_audit_log(
+                user_id=user_id,
+                action=AuditAction.AUTHENTICATE_FAIL,
+                success=False,
+                metadata={"error": result, "reason": "face_detection_failed"}
+            )
+            return jsonify({
+                "authenticated": False,
+                "message": result,
+                "face_detected": False
+            }), 400
+        
+        query_embedding = result  # numpy array of shape (512,)
+        
+        # Compare with stored templates
+        best_distance = float('inf')
+        best_template_id = None
+        
+        for template in templates:
+            try:
+                # Deserialize stored embedding
+                stored_embedding_list = json.loads(template.encrypted_embedding.decode('utf-8'))
+                stored_embedding = np.array(stored_embedding_list, dtype=np.float32)
+                
+                # Compute distance
+                distance, _ = face_service.compare_embeddings(query_embedding, stored_embedding)
+                
+                if distance < best_distance:
+                    best_distance = distance
+                    best_template_id = str(template.id)
+                    
+            except Exception as e:
+                logger.warning(f"Error comparing template {template.id}: {e}")
+                continue
+        
+        # Check if match found (threshold is 1.0)
+        THRESHOLD = face_service.MATCH_THRESHOLD
+        authenticated = best_distance < THRESHOLD
+        
+        # Convert distance to confidence (0-1 scale)
+        confidence = max(0.0, min(1.0, 1.0 - (best_distance / (2 * THRESHOLD))))
         
         if authenticated:
             # Update last authentication time
@@ -395,27 +457,42 @@ def verify_face():
                 action=AuditAction.AUTHENTICATE_SUCCESS,
                 success=True,
                 metadata={
-                    "confidence": confidence,
+                    "confidence": round(confidence, 4),
+                    "distance": round(best_distance, 4),
+                    "template_id": best_template_id,
                     "templates_compared": len(templates)
                 }
             )
             
+            logger.info(f"Authentication SUCCESS: user={user_id}, distance={best_distance:.4f}, confidence={confidence:.2%}")
+            
             return jsonify({
                 "authenticated": True,
                 "user_id": str(user_id),
-                "confidence": confidence
+                "confidence": round(confidence, 4),
+                "distance": round(best_distance, 4),
+                "message": "Face verified successfully"
             }), 200
         else:
             create_audit_log(
                 user_id=user_id,
                 action=AuditAction.AUTHENTICATE_FAIL,
                 success=False,
-                metadata={"reason": "no_match"}
+                metadata={
+                    "reason": "no_match",
+                    "best_distance": round(best_distance, 4),
+                    "confidence": round(confidence, 4),
+                    "threshold": THRESHOLD
+                }
             )
+            
+            logger.info(f"Authentication FAILED: user={user_id}, distance={best_distance:.4f}, threshold={THRESHOLD}")
             
             return jsonify({
                 "authenticated": False,
-                "message": "Face verification failed"
+                "message": "Face does not match enrolled template",
+                "confidence": round(confidence, 4),
+                "distance": round(best_distance, 4)
             }), 401
         
     except Exception as e:
@@ -426,7 +503,8 @@ def verify_face():
             success=False,
             error_message=str(e)
         )
-        return jsonify({"error": "Verification failed"}), 500
+        return jsonify({"error": f"Verification failed: {str(e)}"}), 500
+
 
 
 # ============================================================================

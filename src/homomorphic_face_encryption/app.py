@@ -24,6 +24,7 @@ import os
 from datetime import timedelta
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from .api.routes import api_bp
@@ -87,6 +88,9 @@ def create_app(config_override: dict = None) -> Flask:
     # Apply overrides
     if config_override:
         app.config.update(config_override)
+    
+    # Initialize CORS
+    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
     
     # =========================================================================
     # Extensions Initialization
