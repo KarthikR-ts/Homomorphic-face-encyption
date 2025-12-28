@@ -121,3 +121,20 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Production secrets and certificates
+secrets/*
+!secrets/.gitkeep
+ssl/
+*.key
+*.pem
+*.crt
+
+# Logs
+logs/
+*.log
+
+# Docker volumes (for local development)
+postgres_data/
+redis_data/
+</parameter>

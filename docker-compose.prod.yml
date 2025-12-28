@@ -1,0 +1,462 @@
+version: '3.8'
+
+# =============================================================================
+# Production Docker Compose Configuration
+# Privacy-Preserving Facial Recognition API
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Flask API Service
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: facial-recognition-api
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+    # Environment configuration
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_NAME=face_db
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY_FILE=/run/secrets/secret_key
+      - JWT_PRIVATE_KEY_FILE=/run/secrets/jwt_private_key
+      - DB_ENCRYPTION_KEY_FILE=/run/secrets/db_encryption_key
+      - CORS_ORIGINS=https://your-domain.com
+      - JWT_ISSUER=facial-recognition-api
+      - JWT_AUDIENCE=facial-recognition-client
+      - LOG_DIR=/app/logs
+      - IP_HASH_SALT_FILE=/run/secrets/ip_hash_salt
+
+    # Secrets management
+    secrets:
+      - secret_key
+      - jwt_private_key
+      - db_encryption_key
+      - ip_hash_salt
+
+    # Volume mounts
+    volumes:
+      - app_logs:/app/logs
+      - ckks_keys:/app/keys
+
+    # Networks
+    networks:
+      - frontend
+      - backend
+
+    # Dependencies
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    # Health check (override Dockerfile healthcheck)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL with Encryption and SSL
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15
+    container_name: facial-recognition-postgres
+    restart: unless-stopped
+
+    # Environment (password from secret)
+    environment:
+      - POSTGRES_DB=face_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+    # SSL Configuration
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/etc/ssl/certs/server.crt
+      -c ssl_key_file=/etc/ssl/private/server.key
+      -c ssl_ca_file=/etc/ssl/certs/ca.crt
+
+    # Secrets
+    secrets:
+      - db_password
+
+    # Volume mounts (encrypted data)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./ssl/postgres/server.crt:/etc/ssl/certs/server.crt:ro
+      - ./ssl/postgres/server.key:/etc/ssl/private/server.key:ro
+      - ./ssl/postgres/ca.crt:/etc/ssl/certs/ca.crt:ro
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres_backup:/var/lib/postgresql/backup
+
+    # Networks (only backend - no direct access)
+    networks:
+      - backend
+
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d face_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Backup Sidecar
+  # ---------------------------------------------------------------------------
+  postgres_backup:
+    image: postgres:15
+    container_name: facial-recognition-postgres-backup
+    restart: unless-stopped
+
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - AWS_ACCESS_KEY_ID_FILE=/run/secrets/aws_access_key_id
+      - AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/aws_secret_access_key
+      - S3_BUCKET=facial-recognition-backups
+      - BACKUP_PREFIX=prod/postgres
+
+    secrets:
+      - db_password
+      - aws_access_key_id
+      - aws_secret_access_key
+
+    volumes:
+      - postgres_backup:/var/lib/postgresql/backup
+
+    networks:
+      - backend
+
+    command: >
+      sh -c "
+      while true; do
+        sleep 86400;  # Daily backup
+        TIMESTAMP=$$(date +%Y%m%d_%H%M%S);
+        pg_dump -h postgres -U postgres face_db | \
+        gzip | \
+        aws s3 cp - s3://$${S3_BUCKET}/$${BACKUP_PREFIX}/$${TIMESTAMP}.sql.gz --sse AES256;
+      done
+      "
+
+  # ---------------------------------------------------------------------------
+  # Redis with Persistence and Security
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: facial-recognition-redis
+    restart: unless-stopped
+
+    # Redis configuration
+    command: >
+      redis-server
+      --appendonly yes
+      --save 60 1000
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --requirepass-file /run/secrets/redis_password
+      --bind 0.0.0.0
+
+    # Secrets
+    secrets:
+      - redis_password
+
+    # Volume for persistence
+    volumes:
+      - redis_data:/data
+
+    # Networks
+    networks:
+      - backend
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Celery Worker for Async Tasks
+  # ---------------------------------------------------------------------------
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: facial-recognition-celery
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+    # Environment
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_NAME=face_db
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY_FILE=/run/secrets/secret_key
+      - JWT_PRIVATE_KEY_FILE=/run/secrets/jwt_private_key
+      - DB_ENCRYPTION_KEY_FILE=/run/secrets/db_encryption_key
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+    # Secrets
+    secrets:
+      - secret_key
+      - jwt_private_key
+      - db_encryption_key
+      - redis_password
+
+    # Volumes
+    volumes:
+      - app_logs:/app/logs
+      - ckks_keys:/app/keys
+
+    # Networks
+    networks:
+      - backend
+
+    # Dependencies
+    depends_on:
+      - redis
+      - postgres
+
+    # Command
+    command: ["celery", "-A", "homomorphic_face_encryption.app.celery", "worker", "--loglevel=info", "--concurrency=4"]
+
+  # ---------------------------------------------------------------------------
+  # Nginx Reverse Proxy with TLS
+  # ---------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: facial-recognition-nginx
+    restart: unless-stopped
+
+    # Ports (exposed to host)
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # Volume mounts
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl/letsencrypt:/etc/letsencrypt:ro
+      - frontend_static:/usr/share/nginx/html:ro
+      - nginx_logs:/var/log/nginx
+
+    # Networks
+    networks:
+      - frontend
+
+    # Dependencies
+    depends_on:
+      - app
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Fluentd Log Aggregator
+  # ---------------------------------------------------------------------------
+  fluentd:
+    image: fluent/fluentd:v1.16
+    container_name: facial-recognition-fluentd
+    restart: unless-stopped
+
+    # Fluentd configuration
+    volumes:
+      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+      - app_logs:/app/logs:ro
+      - nginx_logs:/var/log/nginx:ro
+      - fluentd_buffer:/fluentd/buffer
+
+    # Environment
+    environment:
+      - FLUENTD_CONF=fluent.conf
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+
+    # Networks
+    networks:
+      - backend
+      - logging
+
+    # Dependencies
+    depends_on:
+      - elasticsearch
+
+  # ---------------------------------------------------------------------------
+  # Elasticsearch for Log Storage
+  # ---------------------------------------------------------------------------
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: facial-recognition-elasticsearch
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+    # Environment
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+    # Volumes
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+    # Networks
+    networks:
+      - logging
+
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    # Ports (only internal)
+    expose:
+      - 9200
+
+  # ---------------------------------------------------------------------------
+  # Kibana for Log Visualization
+  # ---------------------------------------------------------------------------
+  kibana:
+    image: kibana:8.11.0
+    container_name: facial-recognition-kibana
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+    # Environment
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+    # Networks
+    networks:
+      - logging
+
+    # Dependencies
+    depends_on:
+      - elasticsearch
+
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    # Ports (only internal for security)
+    expose:
+      - 5601
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true
+  logging:
+    driver: bridge
+    internal: true
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /dev/mapper/encrypted_postgres  # LUKS encrypted device
+  postgres_backup:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local
+  ckks_keys:
+    driver: local
+  frontend_static:
+    driver: local
+  nginx_logs:
+    driver: local
+  fluentd_buffer:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+# =============================================================================
+# Secrets
+# =============================================================================
+secrets:
+  secret_key:
+    file: ./secrets/secret_key.txt
+  jwt_private_key:
+    file: ./secrets/jwt_private_key.pem
+  db_encryption_key:
+    file: ./secrets/db_encryption_key.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  ip_hash_salt:
+    file: ./secrets/ip_hash_salt.txt
+  aws_access_key_id:
+    file: ./secrets/aws_access_key_id.txt
+  aws_secret_access_key:
+    file: ./secrets/aws_secret_access_key.txt
