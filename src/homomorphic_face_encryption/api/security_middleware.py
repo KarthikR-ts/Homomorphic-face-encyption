@@ -463,9 +463,9 @@ class SecurityMiddleware:
 
         # Store rate limit configurations for use in decorators
         self.rate_limits = {
-            'enrollment': f"{RATE_LIMIT_REQUESTS_PER_HOUR}/hour",
-            'authentication': f"{RATE_LIMIT_REQUESTS_PER_MINUTE_IP}/minute",
-            'consent': f"{RATE_LIMIT_REQUESTS_PER_MINUTE_USER}/minute"
+            "enrollment": f"{RATE_LIMIT_REQUESTS_PER_HOUR}/hour",
+            "authentication": f"{RATE_LIMIT_REQUESTS_PER_MINUTE_IP}/minute",
+            "consent": f"{RATE_LIMIT_REQUESTS_PER_MINUTE_USER}/minute",
         }
 
     def _setup_error_handling(self):
@@ -657,29 +657,28 @@ class SecurityMiddleware:
 
     def rate_limit_enrollment(self, f):
         """Apply enrollment rate limiting to a route."""
-        if not hasattr(self, 'limiter') or not self.config.enable_rate_limiting:
+        if not hasattr(self, "limiter") or not self.config.enable_rate_limiting:
             return f
         return self.limiter.limit(
-            self.rate_limits['enrollment'],
-            key_func=lambda: f"enrollment:{request.get_json().get('user_id', 'unknown')}"
+            self.rate_limits["enrollment"],
+            key_func=lambda: f"enrollment:{request.get_json().get('user_id', 'unknown')}",
         )(f)
 
     def rate_limit_authentication(self, f):
         """Apply authentication rate limiting to a route."""
-        if not hasattr(self, 'limiter') or not self.config.enable_rate_limiting:
+        if not hasattr(self, "limiter") or not self.config.enable_rate_limiting:
             return f
         return self.limiter.limit(
-            self.rate_limits['authentication'],
-            key_func=get_remote_address
+            self.rate_limits["authentication"], key_func=get_remote_address
         )(f)
 
     def rate_limit_consent(self, f):
         """Apply consent rate limiting to a route."""
-        if not hasattr(self, 'limiter') or not self.config.enable_rate_limiting:
+        if not hasattr(self, "limiter") or not self.config.enable_rate_limiting:
             return f
         return self.limiter.limit(
-            self.rate_limits['consent'],
-            key_func=lambda: f"consent:{self._get_user_from_token()}"
+            self.rate_limits["consent"],
+            key_func=lambda: f"consent:{self._get_user_from_token()}",
         )(f)
 
 

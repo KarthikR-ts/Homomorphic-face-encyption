@@ -50,6 +50,7 @@ except ImportError:
         LEVELEDSHE = None
         ROTATION = None
 
+
 # GPU Support detection
 CUDA_AVAILABLE = False
 try:
@@ -149,6 +150,7 @@ class CKKSEncryptor:
         if not OPENFHE_AVAILABLE:
             # Return mock ciphertext for demo mode
             import pickle
+
             return pickle.dumps({"mock": True, "embedding": embedding})
 
         if not self.key_pair:
@@ -180,8 +182,9 @@ class CKKSEncryptor:
         if not OPENFHE_AVAILABLE:
             # Mock decryption
             import pickle
+
             data = pickle.loads(encrypted_distance)
-            return data.get('distance', 0.5)
+            return data.get("distance", 0.5)
 
         if not self.key_pair:
             raise ValueError("Keys not generated")
@@ -210,6 +213,7 @@ class CKKSEncryptor:
         if not OPENFHE_AVAILABLE:
             # Mock distance computation
             import pickle
+
             return pickle.dumps({"mock": True, "distance": 0.5})
 
         if not self.context or not self.rotation_keys:

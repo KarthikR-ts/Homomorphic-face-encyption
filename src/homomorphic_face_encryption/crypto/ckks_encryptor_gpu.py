@@ -344,7 +344,8 @@ class CKKSEncryptorGPU:
 
         self.performance_stats['gpu_times' if method == 'gpu' else 'cpu_times'].append(processing_time)
 
-        print(".2f"        return results, stats
+        print(f"  ✅ Completed in {processing_time:.2f}s ({stats['throughput']:.1f} embeddings/sec)")
+        return results, stats
 
     def encrypt_embedding(self, embedding: List[float]) -> Ciphertext:
         """
@@ -515,7 +516,8 @@ class CKKSEncryptorGPU:
 
         self.performance_stats['gpu_times' if method == 'gpu' else 'cpu_times'].append(processing_time)
 
-        print(".2f"        return results, stats
+        print(f"  ✅ Completed in {processing_time:.2f}s ({stats['throughput']:.1f} comparisons/sec)")
+        return results, stats
 
     def compute_encrypted_distance(
         self, ct_query: Ciphertext, ct_stored: Ciphertext
