@@ -3,7 +3,22 @@
 import os
 from typing import List, Optional
 import torch
-from openfhe import *
+
+# Optional OpenFHE import - gracefully degrade if not available
+OPENFHE_AVAILABLE = False
+Ciphertext = bytes  # Type alias for when OpenFHE is not available
+
+try:
+    from openfhe import *
+    OPENFHE_AVAILABLE = True
+except ImportError:
+    import warnings
+    warnings.warn(
+        "OpenFHE not available. CKKSEncryptor will run in mock mode. "
+        "Install openfhe-python for production use.",
+        RuntimeWarning
+    )
+
 
 
 class CKKSEncryptor:
@@ -18,7 +33,12 @@ class CKKSEncryptor:
 
     def setup_context(self):
         """Initialize CKKS context with parameters optimized for face embeddings."""
+        if not OPENFHE_AVAILABLE:
+            print("⚠️  OpenFHE not available - running in MOCK mode")
+            return
+        
         print("Setting up CKKS context for face recognition...")
+
 
         parameters = CCParamsCKKSRNS()
         parameters.SetMultiplicativeDepth(
@@ -48,8 +68,13 @@ class CKKSEncryptor:
 
     def generate_keys(self):
         """Generate public/private keys and rotation keys for distance computation."""
+        if not OPENFHE_AVAILABLE:
+            print("⚠️  Skipping key generation - OpenFHE not available")
+            return
+        
         if not self.context:
             self.setup_context()
+
 
         print("Generating keypair...")
         self.key_pair = self.context.KeyGen()
@@ -74,10 +99,16 @@ class CKKSEncryptor:
             embedding: List of 512 float values (normalized face embedding)
 
         Returns:
-            Encrypted ciphertext
+            Encrypted ciphertext (or mock bytes if OpenFHE unavailable)
         """
+        if not OPENFHE_AVAILABLE:
+            # Return mock ciphertext for demo mode
+            import pickle
+            return pickle.dumps({'mock': True, 'embedding': embedding})
+        
         if not self.key_pair:
             self.generate_keys()
+
 
         if len(embedding) != 512:
             raise ValueError(f"Embedding must be 512-dimensional, got {len(embedding)}")

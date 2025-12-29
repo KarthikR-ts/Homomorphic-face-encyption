@@ -1,7 +1,14 @@
 """OpenFHE Setup and Testing Script"""
 
-from openfhe import *
-import numpy as np
+try:
+    from openfhe import *
+    import numpy as np
+    OPENFHE_AVAILABLE = True
+except ImportError:
+    OPENFHE_AVAILABLE = False
+    import numpy as np
+    print("⚠️  OpenFHE not available. This script requires openfhe-python to run.")
+
 
 
 def setup_ckks_context():
@@ -145,7 +152,13 @@ def export_keys(keypair):
 
 def main():
     """Main function to run all tests."""
+    if not OPENFHE_AVAILABLE:
+        print("❌ Cannot run tests: OpenFHE is not installed")
+        print("To install OpenFHE, follow: https://github.com/openfheorg/openfhe-python")
+        return 1
+    
     print("=== OpenFHE CKKS Setup and Testing ===\n")
+
 
     try:
         # Setup

@@ -1,5 +1,3 @@
-# version: '3.8'
-
 services:
   app:
     build: .
@@ -14,7 +12,6 @@ services:
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
       - JWT_SECRET=${JWT_SECRET:-jwt-secret-key}
-      - CKKS_POLY_DEGREE=${CKKS_POLY_DEGREE:-8192}
       - FLASK_APP=homomorphic_face_encryption.app
       - PYTHONPATH=/app/src
       - FLASK_ENV=development
@@ -28,8 +25,22 @@ services:
       - ./src:/app/src
     command: flask run --host=0.0.0.0
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://app:5000
+    depends_on:
+      - app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       - POSTGRES_DB=face_db
       - POSTGRES_USER=postgres
@@ -40,10 +51,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -52,10 +64,11 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 volumes:
   postgres_data:

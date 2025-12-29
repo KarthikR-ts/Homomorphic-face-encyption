@@ -1,8 +1,7 @@
 [tool.poetry]
 name = "homomorphic-face-encryption"
 version = "0.1.0"
-description = "Privacy-preserving facial recognition system"
-authors = ["Kartik <kartik@example.com>"]
+description = "Privacy-preserving facial recognition system" authors = ["Kartik <kartik@example.com>"]
 readme = "README.md"
 packages = [{include = "homomorphic_face_encryption", from = "src"}]
 
@@ -22,6 +21,7 @@ pillow = "*"
 cryptography = "^46.0.3"
 redis = "^7.1.0"
 asyncpg = "^0.31.0"
+flask-cors = "*"
 
 [tool.poetry.scripts]
 app = "homomorphic_face_encryption.app:create_app"

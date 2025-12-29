@@ -1,0 +1,26 @@
+# Core ML
+facenet-pytorch
+torch
+torchvision
+
+# Image processing
+opencv-python-headless
+pillow
+
+# Web framework
+flask
+flask-jwt-extended
+flask-cors
+
+# Database
+sqlalchemy
+psycopg2-binary
+
+# Security
+cryptography>=41.0.0
+
+# Cache
+redis>=5.0.0
+
+# Math (required by facenet-pytorch)
+numpy
