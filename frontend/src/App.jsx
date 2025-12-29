@@ -226,31 +226,90 @@ const App = () => {
   if (!token) {
     return (
       <div className="login-screen">
-        <div className="login-card glass">
-          <div className="logo"><ShieldIcon /> FHE.Face</div>
-          <h3>Secure Gateway</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', lineHeight: 1.6 }}>
-            Privacy-Preserving Biometric Authentication<br />
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Powered by Homomorphic Encryption</span>
+        <div className="login-card glass-glow">
+          <div className="logo" style={{ marginBottom: '0.5rem' }}><ShieldIcon /> FHE.Face</div>
+          <h3 style={{ marginBottom: '0.25rem' }}>Secure Gateway</h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', lineHeight: 1.7, marginBottom: '0.5rem' }}>
+            Privacy-Preserving Biometric Authentication
           </p>
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            marginBottom: '0.5rem'
+          }}>
+            <span style={{
+              fontSize: '0.6875rem',
+              padding: '0.3rem 0.625rem',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%)',
+              color: 'var(--primary-light)',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              fontWeight: 500,
+              letterSpacing: '0.02em'
+            }}>
+              ⚡ FHE Powered
+            </span>
+            <span style={{
+              fontSize: '0.6875rem',
+              padding: '0.3rem 0.625rem',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%)',
+              color: 'var(--accent-light)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              fontWeight: 500,
+              letterSpacing: '0.02em'
+            }}>
+              🔒 Zero-Knowledge
+            </span>
+          </div>
           <form className="nav-links" onSubmit={handleLogin} style={{ gap: '1.25rem' }}>
             <div className="form-group">
-              <label>Identity Handle</label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ color: 'var(--primary-light)' }}>👤</span> Identity Handle
+              </label>
               <input
                 name="username"
                 placeholder="Enter your username"
                 required
                 autoComplete="username"
                 autoFocus
+                style={{
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  transition: 'all 0.3s ease'
+                }}
               />
             </div>
-            <Button type="submit" size="lg" style={{ width: '100%' }}>
-              Initialize Secure Session
+            <Button type="submit" size="lg" glow style={{ width: '100%' }}>
+              🚀 Initialize Secure Session
             </Button>
           </form>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', marginTop: '0.5rem' }}>
-            🔐 128-bit FHE • CKKS Encryption • GDPR Compliant
-          </p>
+          <div style={{
+            marginTop: '1rem',
+            padding: '0.875rem 1rem',
+            borderRadius: '12px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.05)'
+          }}>
+            <p style={{
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              flexWrap: 'wrap'
+            }}>
+              <span>🔐 128-bit FHE</span>
+              <span style={{ color: 'var(--text-dim)' }}>•</span>
+              <span>🧮 CKKS Encryption</span>
+              <span style={{ color: 'var(--text-dim)' }}>•</span>
+              <span>📋 GDPR Compliant</span>
+            </p>
+          </div>
         </div>
       </div>
     );
