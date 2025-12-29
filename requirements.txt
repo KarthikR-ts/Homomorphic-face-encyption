@@ -11,6 +11,11 @@ pillow
 flask
 flask-jwt-extended
 flask-cors
+flask-limiter>=3.5.0
+flask-talisman>=1.0.0
+
+# Logging
+pyyaml>=6.0  # For logging configuration
 
 # Database
 sqlalchemy
@@ -18,9 +23,19 @@ psycopg2-binary
 
 # Security
 cryptography>=41.0.0
+pyjwt>=2.8.0
+
+# Validation
+jsonschema>=4.17.0
 
 # Cache
 redis>=5.0.0
 
 # Math (required by facenet-pytorch)
 numpy
+
+# GPU Acceleration (optional - install based on your CUDA version)
+# cupy-cuda11x>=11.0.0  # For CUDA 11.x
+# cupy-cuda12x>=12.0.0  # For CUDA 12.x
+# pycuda>=2022.1        # Alternative CUDA interface
+# numba>=0.56.0         # CUDA kernel compilation

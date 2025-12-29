@@ -7,7 +7,7 @@ Uses Redis caching for <5ms consent verification latency.
 Usage:
     from api.consent_middleware import consent_required
     from database import ConsentPurpose
-    
+
     @app.route('/api/authenticate')
     @jwt_required()
     @consent_required(ConsentPurpose.AUTHENTICATION)
@@ -43,19 +43,19 @@ logger = logging.getLogger(__name__)
 
 def get_db():
     """Get or create database session for request."""
-    if 'db' not in g:
+    if "db" not in g:
         g.db = SessionLocal()
     return g.db
 
 
 def get_redis():
     """Get Redis client from app config."""
-    return current_app.config.get('REDIS_CLIENT')
+    return current_app.config.get("REDIS_CLIENT")
 
 
 def get_consent_service() -> ConsentService:
     """Get or create consent service for request."""
-    if 'consent_service' not in g:
+    if "consent_service" not in g:
         g.consent_service = ConsentService(get_db(), get_redis())
     return g.consent_service
 
@@ -64,33 +64,35 @@ def log_failed_consent_check(
     user_id: UUID,
     purpose: ConsentPurpose,
     reason: str,
-    ip_address: Optional[str] = None
+    ip_address: Optional[str] = None,
 ) -> None:
     """
     Log failed consent check to audit trail.
-    
+
     DPDP Compliance: All consent enforcement actions are logged.
     """
     try:
         db = get_db()
-        
+
         audit_log = AuditLog(
             user_id=user_id,
             action=AuditAction.AUTHENTICATE_FAIL,
-            metadata_encrypted=encrypt_json_metadata({
-                "reason": f"consent_check_failed:{reason}",
-                "required_purpose": purpose.value,
-                "ip_address": ip_address,
-                "endpoint": request.endpoint,
-                "method": request.method
-            }),
+            metadata_encrypted=encrypt_json_metadata(
+                {
+                    "reason": f"consent_check_failed:{reason}",
+                    "required_purpose": purpose.value,
+                    "ip_address": ip_address,
+                    "endpoint": request.endpoint,
+                    "method": request.method,
+                }
+            ),
             success=False,
-            error_message=f"Consent verification failed: {reason}"
+            error_message=f"Consent verification failed: {reason}",
         )
-        
+
         db.add(audit_log)
         db.commit()
-        
+
     except Exception as e:
         logger.warning(f"Failed to log consent check failure: {e}")
 
@@ -98,16 +100,16 @@ def log_failed_consent_check(
 def consent_required(purpose: ConsentPurpose):
     """
     Decorator that requires valid consent before executing route.
-    
+
     This is the primary consent enforcement mechanism. Apply to any
     route that requires user consent for the specified purpose.
-    
+
     Args:
         purpose: The ConsentPurpose required for this route
-    
+
     Returns:
         Decorated function that checks consent before execution
-    
+
     Usage:
         @app.route('/api/biometric/enroll')
         @jwt_required()
@@ -115,7 +117,7 @@ def consent_required(purpose: ConsentPurpose):
         def enroll_biometric():
             # Only executes if user has valid AUTHENTICATION consent
             pass
-    
+
     Response on failure (403 Forbidden):
         {
             "error": "Consent required",
@@ -123,71 +125,84 @@ def consent_required(purpose: ConsentPurpose):
             "purpose": "AUTHENTICATION",
             "message": "Please grant consent before using this feature"
         }
-    
+
     Performance:
         - With Redis cache: <5ms (80% cache hit expected)
         - Without cache: <50ms (database query)
     """
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def decorated_function(*args, **kwargs) -> Any:
-            # Get user ID from JWT
+            # Get user ID from JWT token
             try:
                 user_id_str = get_jwt_identity()
                 if not user_id_str:
-                    return jsonify({
-                        "error": "Authentication required",
-                        "message": "Valid JWT token required"
-                    }), 401
-                
+                    return (
+                        jsonify(
+                            {
+                                "error": "Authentication required",
+                                "message": "Valid JWT token required",
+                            }
+                        ),
+                        401,
+                    )
+
                 user_id = UUID(user_id_str)
             except (ValueError, TypeError) as e:
                 logger.warning(f"Invalid JWT identity: {e}")
-                return jsonify({
-                    "error": "Invalid authentication",
-                    "message": "JWT token contains invalid user ID"
-                }), 401
-            
+                return (
+                    jsonify(
+                        {
+                            "error": "Invalid authentication",
+                            "message": "JWT token contains invalid user ID",
+                        }
+                    ),
+                    401,
+                )
+
             # Verify consent
             service = get_consent_service()
             result = service.verify_consent(user_id, purpose)
-            
+
             if not result.valid:
                 # Log failed consent check
-                client_ip = request.headers.get('X-Forwarded-For', 
-                             request.headers.get('X-Real-IP', 
-                             request.remote_addr))
-                
+                client_ip = request.headers.get(
+                    "X-Forwarded-For",
+                    request.headers.get("X-Real-IP", request.remote_addr),
+                )
+
                 log_failed_consent_check(
                     user_id=user_id,
                     purpose=purpose,
                     reason=result.status,
-                    ip_address=client_ip
+                    ip_address=client_ip,
                 )
-                
+
                 # Return 403 Forbidden with details
                 response = {
                     "error": "Consent required",
                     "consent_status": result.status,
                     "purpose": purpose.value,
-                    "message": get_consent_message(result.status, purpose)
+                    "message": get_consent_message(result.status, purpose),
                 }
-                
+
                 # Add expiration info if expired
                 if result.status == "expired" and result.expires_at:
                     response["expired_at"] = result.expires_at.isoformat()
-                
+
                 return jsonify(response), 403
-            
+
             # Consent valid - proceed to route handler
             # Store consent info in g for route access
             g.consent_id = result.consent_id
             g.consent_purpose = purpose
             g.consent_remaining_days = result.remaining_days
-            
+
             return f(*args, **kwargs)
-        
+
         return decorated_function
+
     return decorator
 
 
@@ -204,9 +219,9 @@ def get_consent_message(status: str, purpose: ConsentPurpose) -> str:
 def any_consent_required(*purposes: ConsentPurpose):
     """
     Decorator that requires ANY ONE of the specified consents.
-    
+
     Useful when multiple consent types allow access to a feature.
-    
+
     Usage:
         @app.route('/api/logs')
         @jwt_required()
@@ -214,6 +229,7 @@ def any_consent_required(*purposes: ConsentPurpose):
         def view_logs():
             pass
     """
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def decorated_function(*args, **kwargs) -> Any:
@@ -221,13 +237,13 @@ def any_consent_required(*purposes: ConsentPurpose):
                 user_id_str = get_jwt_identity()
                 if not user_id_str:
                     return jsonify({"error": "Authentication required"}), 401
-                
+
                 user_id = UUID(user_id_str)
             except (ValueError, TypeError):
                 return jsonify({"error": "Invalid authentication"}), 401
-            
+
             service = get_consent_service()
-            
+
             # Check each purpose
             for purpose in purposes:
                 result = service.verify_consent(user_id, purpose)
@@ -235,22 +251,28 @@ def any_consent_required(*purposes: ConsentPurpose):
                     g.consent_id = result.consent_id
                     g.consent_purpose = purpose
                     return f(*args, **kwargs)
-            
+
             # No valid consent found
-            return jsonify({
-                "error": "Consent required",
-                "message": f"One of the following consents is required: {[p.value for p in purposes]}",
-                "consent_status": "not_found"
-            }), 403
-        
+            return (
+                jsonify(
+                    {
+                        "error": "Consent required",
+                        "message": f"One of the following consents is required: {[p.value for p in purposes]}",
+                        "consent_status": "not_found",
+                    }
+                ),
+                403,
+            )
+
         return decorated_function
+
     return decorator
 
 
 def all_consents_required(*purposes: ConsentPurpose):
     """
     Decorator that requires ALL specified consents.
-    
+
     Usage:
         @app.route('/api/admin/export')
         @jwt_required()
@@ -258,6 +280,7 @@ def all_consents_required(*purposes: ConsentPurpose):
         def admin_export():
             pass
     """
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def decorated_function(*args, **kwargs) -> Any:
@@ -265,39 +288,45 @@ def all_consents_required(*purposes: ConsentPurpose):
                 user_id_str = get_jwt_identity()
                 if not user_id_str:
                     return jsonify({"error": "Authentication required"}), 401
-                
+
                 user_id = UUID(user_id_str)
             except (ValueError, TypeError):
                 return jsonify({"error": "Invalid authentication"}), 401
-            
+
             service = get_consent_service()
             missing = []
-            
+
             for purpose in purposes:
                 result = service.verify_consent(user_id, purpose)
                 if not result.valid:
                     missing.append(purpose.value)
-            
+
             if missing:
-                return jsonify({
-                    "error": "Consent required",
-                    "message": f"Missing consent for: {missing}",
-                    "missing_consents": missing
-                }), 403
-            
+                return (
+                    jsonify(
+                        {
+                            "error": "Consent required",
+                            "message": f"Missing consent for: {missing}",
+                            "missing_consents": missing,
+                        }
+                    ),
+                    403,
+                )
+
             return f(*args, **kwargs)
-        
+
         return decorated_function
+
     return decorator
 
 
 def consent_warning(purpose: ConsentPurpose, warning_days: int = 7):
     """
     Decorator that adds consent expiration warning to response.
-    
+
     Adds X-Consent-Warning header if consent expires within warning_days.
     Useful for prompting users to renew consent before expiration.
-    
+
     Usage:
         @app.route('/api/authenticate')
         @jwt_required()
@@ -306,35 +335,38 @@ def consent_warning(purpose: ConsentPurpose, warning_days: int = 7):
         def authenticate():
             pass
     """
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def decorated_function(*args, **kwargs) -> Any:
             response = f(*args, **kwargs)
-            
+
             # Check remaining days from g (set by consent_required)
-            remaining = getattr(g, 'consent_remaining_days', None)
-            
+            remaining = getattr(g, "consent_remaining_days", None)
+
             if remaining is not None and remaining <= warning_days:
                 # Flask response might be tuple (data, status_code)
                 if isinstance(response, tuple):
                     resp_obj = current_app.make_response(response)
                 else:
                     resp_obj = response
-                
-                resp_obj.headers['X-Consent-Warning'] = (
-                    f"Consent expires in {remaining} days. Please renew."
-                )
-                resp_obj.headers['X-Consent-Expires-Days'] = str(remaining)
-                
+
+                resp_obj.headers[
+                    "X-Consent-Warning"
+                ] = f"Consent expires in {remaining} days. Please renew."
+                resp_obj.headers["X-Consent-Expires-Days"] = str(remaining)
+
                 return resp_obj
-            
+
             return response
-        
+
         return decorated_function
+
     return decorator
 
 
 # Convenience decorators for specific purposes
+
 
 def authentication_consent_required(f: Callable) -> Callable:
     """Shorthand for @consent_required(ConsentPurpose.AUTHENTICATION)"""
@@ -354,7 +386,7 @@ def audit_consent_required(f: Callable) -> Callable:
 class ConsentMiddlewareConfig:
     """
     Configuration for consent middleware behavior.
-    
+
     Usage:
         app.config['CONSENT_MIDDLEWARE'] = ConsentMiddlewareConfig(
             cache_enabled=True,
@@ -362,17 +394,17 @@ class ConsentMiddlewareConfig:
             strict_mode=False
         )
     """
-    
+
     def __init__(
         self,
         cache_enabled: bool = True,
         log_failed_checks: bool = True,
         strict_mode: bool = False,
-        warning_days: int = 7
+        warning_days: int = 7,
     ):
         """
         Initialize middleware configuration.
-        
+
         Args:
             cache_enabled: Use Redis cache for consent verification
             log_failed_checks: Log failed consent checks to audit log
@@ -388,30 +420,30 @@ class ConsentMiddlewareConfig:
 def init_consent_middleware(app, redis_client=None):
     """
     Initialize consent middleware for Flask app.
-    
+
     Call this in your app factory to set up the middleware.
-    
+
     Usage:
         app = Flask(__name__)
         redis_client = redis.Redis(host='localhost', port=6379)
         init_consent_middleware(app, redis_client)
-    
+
     Args:
         app: Flask application instance
         redis_client: Redis client for caching
     """
-    app.config['REDIS_CLIENT'] = redis_client
-    
+    app.config["REDIS_CLIENT"] = redis_client
+
     # Default configuration
-    if 'CONSENT_MIDDLEWARE' not in app.config:
-        app.config['CONSENT_MIDDLEWARE'] = ConsentMiddlewareConfig()
-    
+    if "CONSENT_MIDDLEWARE" not in app.config:
+        app.config["CONSENT_MIDDLEWARE"] = ConsentMiddlewareConfig()
+
     # Register teardown
     @app.teardown_appcontext
     def cleanup_consent_middleware(exception=None):
-        db = g.pop('db', None)
+        db = g.pop("db", None)
         if db is not None:
             db.close()
-        g.pop('consent_service', None)
-    
+        g.pop("consent_service", None)
+
     logger.info("Consent middleware initialized")

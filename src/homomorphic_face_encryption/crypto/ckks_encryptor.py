@@ -1,8 +1,12 @@
-"""CKKS-based Homomorphic Encryption for Face Recognition"""
+"""CKKS-based Homomorphic Encryption for Face Recognition with GPU Acceleration"""
 
 import os
-from typing import List, Optional
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import List, Optional, Tuple, Dict, Any, TYPE_CHECKING
 import torch
+import numpy as np
 
 # Optional OpenFHE import - gracefully degrade if not available
 OPENFHE_AVAILABLE = False
@@ -10,42 +14,91 @@ Ciphertext = bytes  # Type alias for when OpenFHE is not available
 
 try:
     from openfhe import *
+
     OPENFHE_AVAILABLE = True
 except ImportError:
     import warnings
+
     warnings.warn(
         "OpenFHE not available. CKKSEncryptor will run in mock mode. "
         "Install openfhe-python for production use.",
-        RuntimeWarning
+        RuntimeWarning,
     )
 
+    # Define mock types for type checking when OpenFHE is not available
+    class CryptoContext:
+        pass
+
+    class KeyPair:
+        pass
+
+    class EvalKey:
+        pass
+
+    class CCParamsCKKSRNS:
+        pass
+
+    class SecurityLevel:
+        HEStd_128_classic = None
+
+    def GenCryptoContext(params):
+        return None
+
+    class PKESchemeFeature:
+        PKE = None
+        KEYSWITCH = None
+        LEVELEDSHE = None
+        ROTATION = None
+
+# GPU Support detection
+CUDA_AVAILABLE = False
+try:
+    import cupy as cp
+
+    CUDA_AVAILABLE = cp.cuda.runtime.getDeviceCount() > 0
+    if CUDA_AVAILABLE:
+        print("CUDA/cupy available for GPU acceleration")
+except ImportError:
+    try:
+        # Fallback to PyCUDA if cupy not available
+        import pycuda.driver as cuda
+        import pycuda.autoinit
+
+        CUDA_AVAILABLE = cuda.Device.count() > 0
+        if CUDA_AVAILABLE:
+            print("PyCUDA available for GPU acceleration")
+    except ImportError:
+        CUDA_AVAILABLE = False
+        print("Warning: No CUDA support available - GPU acceleration disabled")
 
 
 class CKKSEncryptor:
-    """CKKS-based homomorphic encryption for secure face embedding comparison."""
+    """
+    CKKS Homomorphic Encryption for face recognition with optional GPU acceleration.
 
-    def __init__(self):
+    This class provides homomorphic encryption capabilities for secure face recognition,
+    enabling encrypted distance computations between face embeddings without decryption.
+    """
+
+    def __init__(self, poly_degree: int = 8192, multiplicative_depth: int = 5):
+        self.poly_degree = poly_degree
+        self.multiplicative_depth = multiplicative_depth
         self.context: Optional[CryptoContext] = None
         self.key_pair: Optional[KeyPair] = None
         self.rotation_keys: Optional[EvalKey] = None
-        self.poly_degree = int(os.getenv("CKKS_POLY_DEGREE", "8192"))
-        self.multiplicative_depth = int(os.getenv("CKKS_MULT_DEPTH", "5"))
 
     def setup_context(self):
-        """Initialize CKKS context with parameters optimized for face embeddings."""
+        """Initialize CKKS cryptographic context."""
         if not OPENFHE_AVAILABLE:
-            print("⚠️  OpenFHE not available - running in MOCK mode")
+            print("Warning: OpenFHE not available - running in mock mode")
             return
-        
-        print("Setting up CKKS context for face recognition...")
 
+        print(f"Setting up CKKS context with ring dimension {self.poly_degree}...")
 
         parameters = CCParamsCKKSRNS()
-        parameters.SetMultiplicativeDepth(
-            self.multiplicative_depth
-        )  # For distance computation
+        parameters.SetMultiplicativeDepth(self.multiplicative_depth)
         parameters.SetScalingModSize(50)
-        parameters.SetBatchSize(8192)  # Large batch size for embedding dimensions
+        parameters.SetBatchSize(self.poly_degree // 2)  # Batch size for SIMD operations
         parameters.SetSecurityLevel(SecurityLevel.HEStd_128_classic)
         parameters.SetRingDim(self.poly_degree)
 
@@ -57,24 +110,16 @@ class CKKSEncryptor:
         self.context.Enable(PKESchemeFeature.LEVELEDSHE)
         self.context.Enable(PKESchemeFeature.ROTATION)
 
-        # Enable OpenMP parallelization if available
-        try:
-            self.context.Enable(MULTIPARTY)  # This enables OpenMP parallelization
-            print("OpenMP parallelization enabled")
-        except:
-            print("OpenMP parallelization not available")
-
         print(f"CKKS context initialized with ring dimension {self.poly_degree}")
 
     def generate_keys(self):
         """Generate public/private keys and rotation keys for distance computation."""
         if not OPENFHE_AVAILABLE:
-            print("⚠️  Skipping key generation - OpenFHE not available")
+            print("Warning: Skipping key generation - OpenFHE not available")
             return
-        
+
         if not self.context:
             self.setup_context()
-
 
         print("Generating keypair...")
         self.key_pair = self.context.KeyGen()
@@ -104,16 +149,15 @@ class CKKSEncryptor:
         if not OPENFHE_AVAILABLE:
             # Return mock ciphertext for demo mode
             import pickle
-            return pickle.dumps({'mock': True, 'embedding': embedding})
-        
+            return pickle.dumps({"mock": True, "embedding": embedding})
+
         if not self.key_pair:
             self.generate_keys()
-
 
         if len(embedding) != 512:
             raise ValueError(f"Embedding must be 512-dimensional, got {len(embedding)}")
 
-        # Pad to batch size if necessary (embeddings are much smaller than batch size)
+        # Pad to batch size if necessary
         padded_embedding = embedding + [0.0] * (
             self.context.GetEncodingParams().GetBatchSize() - len(embedding)
         )
@@ -133,6 +177,12 @@ class CKKSEncryptor:
         Returns:
             Decrypted distance as float
         """
+        if not OPENFHE_AVAILABLE:
+            # Mock decryption
+            import pickle
+            data = pickle.loads(encrypted_distance)
+            return data.get('distance', 0.5)
+
         if not self.key_pair:
             raise ValueError("Keys not generated")
 
@@ -157,6 +207,11 @@ class CKKSEncryptor:
         Returns:
             Encrypted distance value (single ciphertext)
         """
+        if not OPENFHE_AVAILABLE:
+            # Mock distance computation
+            import pickle
+            return pickle.dumps({"mock": True, "distance": 0.5})
+
         if not self.context or not self.rotation_keys:
             raise ValueError("Context and rotation keys must be initialized")
 
@@ -170,16 +225,12 @@ class CKKSEncryptor:
         sum_ct = diff_squared
 
         # Sum across all 512 dimensions using rotation-based accumulation
-        # This implements a parallel prefix sum using the rotation keys
         rotation_steps = [1, 2, 4, 8, 16, 32, 64, 128, 256]  # Powers of 2
 
         for rotation in rotation_steps:
             if rotation < 512:  # Don't rotate beyond embedding dimensions
                 rotated = self.context.EvalRotate(sum_ct, rotation, self.rotation_keys)
                 sum_ct = self.context.EvalAdd(sum_ct, rotated)
-
-        # At this point, sum_ct contains the sum in the first coefficient
-        # and the same value replicated across all positions due to the rotations
 
         return sum_ct
 
