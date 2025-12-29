@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 services:
   app:
@@ -15,12 +15,18 @@ services:
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
       - JWT_SECRET=${JWT_SECRET:-jwt-secret-key}
       - CKKS_POLY_DEGREE=${CKKS_POLY_DEGREE:-8192}
+      - FLASK_APP=homomorphic_face_encryption.app
+      - PYTHONPATH=/app/src
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./src:/app/src
-    command: poetry run flask run --host=0.0.0.0
+    command: flask run --host=0.0.0.0
 
   postgres:
     image: postgres:15

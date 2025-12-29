@@ -15,14 +15,14 @@ RUN apt-get update && apt-get install -y \
 # Install Poetry
 RUN pip install poetry
 
-# Copy poetry files
-COPY pyproject.toml poetry.lock* ./
+# Copy poetry files and README
+COPY pyproject.toml poetry.lock* README.md ./
 
 # Configure poetry
 RUN poetry config virtualenvs.create false
 
 # Install dependencies
-RUN poetry install --no-dev --no-interaction --no-ansi
+RUN poetry install --only main --no-interaction --no-ansi --no-root
 
 # Copy source code
 COPY src/ ./src/
@@ -36,4 +36,4 @@ USER app
 EXPOSE 5000
 
 # Run the application
-CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0"]

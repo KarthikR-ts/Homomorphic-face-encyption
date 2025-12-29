@@ -57,12 +57,21 @@ from .encryption_utils import EncryptedJSONType, PGPEncryptedType
 # Database connection configuration
 def get_database_url() -> str:
     """Build database URL from environment variables."""
-    user = os.getenv("DB_USER", "postgres")
-    password = os.getenv("DB_PASSWORD", "password")
     host = os.getenv("DB_HOST", "localhost")
-    port = os.getenv("DB_PORT", "5432")
-    name = os.getenv("DB_NAME", "face_db")
-    return f"postgresql://{user}:{password}@{host}:{port}/{name}"
+    if host == "sqlite" or host.startswith("sqlite://"):
+        # Use SQLite for development/testing
+        name = os.getenv("DB_NAME", "face_db.sqlite")
+        if name == ":memory:":
+            return "sqlite:///:memory:"
+        else:
+            return f"sqlite:///{name}"
+    else:
+        # Use PostgreSQL
+        user = os.getenv("DB_USER", "postgres")
+        password = os.getenv("DB_PASSWORD", "password")
+        port = os.getenv("DB_PORT", "5432")
+        name = os.getenv("DB_NAME", "face_db")
+        return f"postgresql://{user}:{password}@{host}:{port}/{name}"
 
 
 # SQLAlchemy 2.0 style declarative base
@@ -538,17 +547,53 @@ def prevent_audit_log_update(mapper, connection, target):
 
 
 # Engine and session factory
-engine = create_engine(
-    get_database_url(),
-    pool_size=20,          # Connection pool size
-    max_overflow=30,       # Extra connections allowed
-    pool_timeout=30,       # Wait timeout for connection
-    pool_recycle=1800,     # Recycle connections after 30 min
-    echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
-)
+_engine = None
+_SessionLocal = None
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def get_engine():
+    global _engine
+    if _engine is None:
+        db_url = get_database_url()
+        # Use different parameters for SQLite vs PostgreSQL
+        if db_url.startswith('sqlite'):
+            # SQLite-specific configuration
+            _engine = create_engine(
+                db_url,
+                echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
+            )
+        else:
+            # PostgreSQL-specific configuration
+            _engine = create_engine(
+                db_url,
+                pool_size=20,          # Connection pool size
+                max_overflow=30,       # Extra connections allowed
+                pool_timeout=30,       # Wait timeout for connection
+                pool_recycle=1800,     # Recycle connections after 30 min
+                echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
+            )
+    return _engine
 
+
+def get_session_local():
+    global _SessionLocal
+    if _SessionLocal is None:
+        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+    return _SessionLocal
+
+
+def create_tables():
+    """Create all database tables."""
+    Base.metadata.create_all(bind=get_engine())
+
+
+def drop_tables():
+    """Drop all database tables (use with caution!)."""
+    Base.metadata.drop_all(bind=get_engine())
+
+
+# For backward compatibility
+engine = get_engine()
+SessionLocal = get_session_local()
 
 def get_db():
     """

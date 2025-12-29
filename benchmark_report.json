@@ -1,0 +1,102 @@
+{
+  "test_date": "2025-12-25T18:39:42.489279",
+  "system_specs": {
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "cpu_count": 12,
+    "ram_total_gb": "Unknown (psutil not available)",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python_version": "3.11.9"
+  },
+  "results": {
+    "encrypted_distance_computation": {
+      "mean_time_ms": 0.005656500019540545,
+      "std_dev_ms": 0.0008026567062673375,
+      "min_time_ms": 0.00529999852005858,
+      "max_time_ms": 0.022199999875738285,
+      "total_time_ms": 5.656500019540545,
+      "expected_performance": "<5ms per comparison on CPU",
+      "target_met": true
+    },
+    "one_to_n_scaling": {
+      "csv_output": "benchmark_1_to_N_results.csv",
+      "plot_output": "benchmark_1_to_N_scaling.png",
+      "results": [
+        {
+          "n_templates": 100,
+          "time_ms": 0.6052000007912284,
+          "time_per_template_ms": 0.006052000007912284,
+          "memory_mb": 0
+        },
+        {
+          "n_templates": 1000,
+          "time_ms": 6.586299999980838,
+          "time_per_template_ms": 0.006586299999980838,
+          "memory_mb": 0
+        },
+        {
+          "n_templates": 5000,
+          "time_ms": 70.78000000001339,
+          "time_per_template_ms": 0.014156000000002677,
+          "memory_mb": 0
+        }
+      ]
+    },
+    "accuracy_vs_encryption": {
+      "n_people": 100,
+      "embedding_dim": 512,
+      "thresholds": [
+        0.5,
+        0.6,
+        0.7,
+        0.7999999999999999,
+        0.8999999999999999,
+        0.9999999999999999,
+        1.0999999999999999
+      ],
+      "plaintext_accuracies": [
+        0.005025125628140704,
+        0.005025125628140704,
+        0.005025125628140704,
+        0.005025125628140704,
+        0.005025125628140704,
+        0.005025125628140704,
+        0.005025125628140704
+      ],
+      "encrypted_accuracies": [
+        0.004773869346733668,
+        0.004773869346733668,
+        0.004773869346733668,
+        0.004773869346733668,
+        0.004773869346733668,
+        0.004773869346733668,
+        0.004773869346733668
+      ],
+      "accuracy_drops": [
+        0.00025125628140703574,
+        0.00025125628140703574,
+        0.00025125628140703574,
+        0.00025125628140703574,
+        0.00025125628140703574,
+        0.00025125628140703574,
+        0.00025125628140703574
+      ],
+      "avg_accuracy_drop": 0.00025125628140703574,
+      "expected_max_drop": 0.05,
+      "target_met": true,
+      "plaintext_best_threshold": 0.5,
+      "encrypted_best_threshold": 0.5,
+      "plaintext_best_accuracy": 0.005025125628140704,
+      "encrypted_best_accuracy": 0.004773869346733668,
+      "roc_plot": "accuracy_vs_encryption_roc.png"
+    },
+    "database_query_performance": {
+      "n_records": 100000,
+      "avg_query_time_without_index_ms": 690.4181707023529,
+      "avg_query_time_with_index_ms": 5.631248506803509,
+      "expected_with_index": "<10ms",
+      "expected_without_index": ">500ms",
+      "with_index_target_met": true,
+      "without_index_target_met": true
+    }
+  }
+}

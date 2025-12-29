@@ -28,6 +28,8 @@ from flask_jwt_extended import JWTManager
 
 from .api.routes import api_bp
 from .api.consent_routes import consent_bp
+from .api.enrollment_routes import enrollment_bp
+from .api.authentication_routes import auth_bp
 from .api.consent_middleware import init_consent_middleware
 from .database import create_tables, engine
 from .database.encryption_utils import setup_pgcrypto
@@ -141,6 +143,12 @@ def create_app(config_override: dict = None) -> Flask:
     # Consent management routes
     app.register_blueprint(consent_bp, url_prefix='/api/consent')
     
+    # Enrollment routes
+    app.register_blueprint(enrollment_bp, url_prefix='/api')
+    
+    # Authentication routes
+    app.register_blueprint(auth_bp, url_prefix='/api')
+    
     # =========================================================================
     # Database Setup
     # =========================================================================
@@ -202,6 +210,8 @@ def create_app(config_override: dict = None) -> Flask:
                 },
                 "biometric": {
                     "register": "POST /api/register",
+                    "enroll": "POST /api/enroll",
+                    "authenticate": "POST /api/authenticate",
                     "verify": "POST /api/verify",
                     "templates": "GET /api/templates"
                 },

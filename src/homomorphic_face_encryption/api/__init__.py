@@ -30,6 +30,8 @@ Usage:
 
 from .routes import api_bp
 from .consent_routes import consent_bp
+from .enrollment_routes import enrollment_bp
+from .authentication_routes import auth_bp
 from .consent_middleware import (
     consent_required,
     any_consent_required,
@@ -46,6 +48,8 @@ __all__ = [
     # Blueprints
     "api_bp",
     "consent_bp",
+    "enrollment_bp",
+    "auth_bp",
     
     # Middleware decorators
     "consent_required",
