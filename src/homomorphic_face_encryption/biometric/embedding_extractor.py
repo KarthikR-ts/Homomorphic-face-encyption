@@ -11,8 +11,8 @@ class EmbeddingExtractor:
 
     def __init__(self):
         """Initialize the FaceNet model for embedding extraction."""
-        # Determine device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Determine device - Forced to CPU
+        self.device = torch.device('cpu')
         print(f"Using device: {self.device}")
 
         # Load pre-trained FaceNet model

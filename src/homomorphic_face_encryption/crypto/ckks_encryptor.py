@@ -51,26 +51,8 @@ except ImportError:
         ROTATION = None
 
 
-# GPU Support detection
+# GPU Support detection - Disabled
 CUDA_AVAILABLE = False
-try:
-    import cupy as cp
-
-    CUDA_AVAILABLE = cp.cuda.runtime.getDeviceCount() > 0
-    if CUDA_AVAILABLE:
-        print("CUDA/cupy available for GPU acceleration")
-except ImportError:
-    try:
-        # Fallback to PyCUDA if cupy not available
-        import pycuda.driver as cuda
-        import pycuda.autoinit
-
-        CUDA_AVAILABLE = cuda.Device.count() > 0
-        if CUDA_AVAILABLE:
-            print("PyCUDA available for GPU acceleration")
-    except ImportError:
-        CUDA_AVAILABLE = False
-        print("Warning: No CUDA support available - GPU acceleration disabled")
 
 
 class CKKSEncryptor:
@@ -281,5 +263,5 @@ class CKKSEncryptor:
     def __str__(self) -> str:
         """String representation."""
         status = "initialized" if self.context else "not_initialized"
-        device = "GPU" if torch.cuda.is_available() else "CPU"
+        device = "CPU"
         return f"CKKSEncryptor(status={status}, device={device}, embedding_dim=512)"
