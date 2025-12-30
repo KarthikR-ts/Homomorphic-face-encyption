@@ -18,23 +18,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 # Copy requirements
-COPY requirements.txt ./requirements-original.txt
+COPY requirements.txt .
 
-# Install CPU-only PyTorch first (MUCH smaller than CUDA version)
-# PyTorch CUDA: ~2GB, PyTorch CPU: ~200MB
+# Install dependencies in one layer to reduce image size
+# We use --index-url to ensure CPU-only versions are pulled for torch
 RUN pip install --no-cache-dir --user \
+  --index-url https://download.pytorch.org/whl/cpu \
   torch==2.1.0+cpu \
   torchvision==0.16.0+cpu \
-  --index-url https://download.pytorch.org/whl/cpu
-
-# Create requirements without torch/torchvision (we already installed CPU versions)
-RUN grep -v "^torch" requirements-original.txt | grep -v "^torchvision" | grep -v "^facenet-pytorch" > requirements-other.txt
-
-# Install other dependencies
-RUN pip install --no-cache-dir --user -r requirements-other.txt
-
-# Install facenet-pytorch (will use our CPU torch)
-RUN pip install --no-cache-dir --user facenet-pytorch
+  && pip install --no-cache-dir --user -r requirements.txt \
+  && pip install --no-cache-dir --user facenet-pytorch
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production image
