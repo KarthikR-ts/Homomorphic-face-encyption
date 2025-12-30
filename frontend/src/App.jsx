@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Button from './components/Button';
+import AnimatedBackground from './components/AnimatedBackground';
 import ConsentOnboarding from './ConsentOnboarding';
 import ConsentDashboard from './ConsentDashboard';
 
@@ -226,7 +227,8 @@ const App = () => {
   if (!token) {
     return (
       <div className="login-screen">
-        <div className="login-card glass-glow">
+        <AnimatedBackground />
+        <div className="login-card glass-glow" style={{ position: 'relative', zIndex: 1 }}>
           <div className="logo" style={{ marginBottom: '0.5rem' }}><ShieldIcon /> FHE.Face</div>
           <h3 style={{ marginBottom: '0.25rem' }}>Secure Gateway</h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', lineHeight: 1.7, marginBottom: '0.5rem' }}>
@@ -323,6 +325,7 @@ const App = () => {
   // Main Dashboard
   return (
     <div className="app-container">
+      <AnimatedBackground />
       <aside className="sidebar">
         <div className="logo"><ShieldIcon /> FHE.Face</div>
         <nav className="nav-links">
