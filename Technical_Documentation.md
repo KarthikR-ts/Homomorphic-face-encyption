@@ -66,7 +66,7 @@ graph TD
     API --> Redis[(Redis)]
 ```
  
-![System Architecture Diagram](path/to/system_architecture.png)
+![System Architecture Diagram](system_architecture.png)
 *High-level overview of the Homomorphic Face Encryption system components and their interactions.*
 
 ### 4.2 Authentication Flow (1:N Mode)
@@ -108,7 +108,7 @@ The system uses a PostgreSQL database with pgcrypto for column-level encryption 
 - **Consent Records**: Purview-specific consent logs (DPDP compliant).
 - **Audit Logs**: Immutable trail of all sensitive operations.
 
-![Database Entity Relationship Diagram](path/to/database_schema.png)
+![Database Entity Relationship Diagram](database_schema.png)
 *Detailed schema showing relationships between users, templates, consent, and audit logs.*
 
 ---
@@ -181,11 +181,11 @@ The system has been rigorously tested for accuracy and latency.
 
 **Accuracy vs. Encryption (ROC Curve):**
 *The ROC curve demonstrates that homomorphic encryption maintains the same accuracy levels as plaintext processing, with negligible noise introduction.*
-![Accuracy Plot]()
+![Accuracy Plot](accuracy_vs_encryption_roc.png)
 
 **Scaling (Wait-time vs. Database Size):**
 *Our benchmarks show linear scaling, with 1:N search remaining efficient even as the enrolled user base grows.*
-![Scaling Plot]()
+![Scaling Plot](benchmark_1_to_N_scaling.png)
 
 ### 10. Challenges & Learnings
 

@@ -24,11 +24,11 @@ COPY requirements.txt constraints.txt ./
 ENV PIP_CONSTRAINT=/build/constraints.txt
 
 # Install dependencies in a single, clean layer with Triple-Lock Optimization:
-# 1. Explicit --index-url for CPU-only wheels
+# 1. Use --extra-index-url for CPU-only wheels (so PyPI remains accessible for other packages)
 # 2. Explicit --constraint to lock versions
 # 3. Explicit purge of any nvidia/cuda artifacts that might be pulled transitively
 RUN pip install --no-cache-dir --user \
-  --index-url https://download.pytorch.org/whl/cpu \
+  --extra-index-url https://download.pytorch.org/whl/cpu \
   torch==2.1.0+cpu \
   torchvision==0.16.0+cpu \
   facenet-pytorch \
