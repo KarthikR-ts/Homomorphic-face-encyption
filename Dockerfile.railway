@@ -69,7 +69,6 @@ WORKDIR /app
 
 # Copy only necessary application files
 COPY src/ ./src/
-COPY pyproject.toml ./
 
 # Set environment variables
 ENV PYTHONPATH=/app/src \
