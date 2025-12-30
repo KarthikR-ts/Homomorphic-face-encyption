@@ -1,6 +1,13 @@
 # Railway Ignore File
 # These files will not be included in the deployment
 
+# Keep these!
+!requirements.txt
+!constraints.txt
+!Dockerfile.railway
+!railway.toml
+!railway.json
+
 # Development and test files
 *.test.py
 tests/

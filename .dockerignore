@@ -9,6 +9,12 @@ venv/
 ENV/
 .venv
 
+# Allow list
+!requirements.txt
+!constraints.txt
+!pyproject.toml
+!src/**
+
 # Poetry
 .venv
 poetry.lock
