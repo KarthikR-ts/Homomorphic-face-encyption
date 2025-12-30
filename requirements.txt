@@ -29,7 +29,7 @@ jsonschema>=4.17.0
 redis>=5.0.0
 
 # Math (required by facenet-pytorch)
-numpy
+numpy<2.0.0
 
 # Production server
 gunicorn>=21.0.0

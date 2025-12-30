@@ -451,7 +451,7 @@ class SecurityMiddleware:
             self.app,
             origins=self.config.cors_origins,
             methods=["POST", "GET", "OPTIONS", "DELETE", "PUT"],
-            allowed_headers=["Authorization", "Content-Type", "Accept"],
+            allow_headers=["Authorization", "Content-Type", "Accept"],
             supports_credentials=True,
             max_age=3600,
         )
@@ -713,7 +713,7 @@ def init_security_middleware(app: Flask) -> SecurityMiddleware:
         jwt_secret_key=os.getenv("JWT_SECRET_KEY", "dev-secret-key"),
         jwt_public_key=os.getenv("JWT_PUBLIC_KEY", ""),
         redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
-        cors_origins=os.getenv("CORS_ORIGINS", "https://app.example.com").split(","),
+        cors_origins=os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else [],
         log_level=os.getenv("LOG_LEVEL", "INFO"),
         enable_2fa=os.getenv("ENABLE_2FA", "false").lower() == "true",
         enable_request_logging=os.getenv("ENABLE_REQUEST_LOGGING", "true").lower()

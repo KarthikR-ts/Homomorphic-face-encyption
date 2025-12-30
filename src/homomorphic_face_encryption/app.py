@@ -84,13 +84,22 @@ def create_app(config_override: dict = None) -> Flask:
     logger.info(f"JWT configured with secret starting with: {jwt_secret[:15]}...")
 
     # Database configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"postgresql://{os.getenv('DB_USER', 'postgres')}:"
-        f"{os.getenv('DB_PASSWORD', 'password')}@"
-        f"{os.getenv('DB_HOST', 'localhost')}:"
-        f"{os.getenv('DB_PORT', '5432')}/"
-        f"{os.getenv('DB_NAME', 'face_db')}"
-    )
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        # Compatibility fix for SQLAlchemy with Postgres
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+        app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+        logger.info("Using DATABASE_URL for connection")
+    else:
+        app.config["SQLALCHEMY_DATABASE_URI"] = (
+            f"postgresql://{os.getenv('DB_USER', 'postgres')}:"
+            f"{os.getenv('DB_PASSWORD', 'password')}@"
+            f"{os.getenv('DB_HOST', 'localhost')}:"
+            f"{os.getenv('DB_PORT', '5432')}/"
+            f"{os.getenv('DB_NAME', 'face_db')}"
+        )
+        logger.info(f"Using manual DB config: {os.getenv('DB_HOST', 'localhost')}")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Redis configuration
@@ -159,13 +168,12 @@ def create_app(config_override: dict = None) -> Flask:
     # Initialize consent middleware
     init_consent_middleware(app, redis_client)
 
-    # =========================================================================
-    # CORS Setup (simple version for development)
-    # =========================================================================
-    from flask_cors import CORS
-    cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
-    CORS(app, origins=cors_origins, supports_credentials=True)
-    logger.info(f"CORS enabled for origins: {cors_origins}")
+    # CORS is handled by security middleware in production.
+    # We initialization it here ONLY in development mode for easy testing.
+    if is_development:
+        from flask_cors import CORS
+        CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173"], supports_credentials=True)
+        logger.info("CORS enabled for development (localhost)")
 
     # Initialize security middleware only in production
     # In development, it can interfere with flask_jwt_extended

@@ -71,3 +71,9 @@ build/
 
 # Docker
 .dockerignore
+Dockerfile*
+
+# Environment
+.env
+.env.*
+!.env.railway.template
