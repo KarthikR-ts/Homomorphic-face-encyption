@@ -17,12 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /build
 
-# Copy requirements and constraints
+# Copy requirements
 COPY requirements.txt ./
-COPY constraints.txt ./
-
-# Configure PIP constraints file location
-ENV PIP_CONSTRAINT=/build/constraints.txt
 
 # Install dependencies in a single, clean layer with Triple-Lock Optimization:
 # 1. Use --extra-index-url for CPU-only wheels (so PyPI remains accessible for other packages)
@@ -30,8 +26,6 @@ ENV PIP_CONSTRAINT=/build/constraints.txt
 # 3. Explicit purge of any nvidia/cuda artifacts that might be pulled transitively
 RUN pip install --no-cache-dir --user \
   --extra-index-url https://download.pytorch.org/whl/cpu \
-  torch==2.1.0+cpu \
-  torchvision==0.16.0+cpu \
   facenet-pytorch \
   -r requirements.txt \
   && pip uninstall -y nvidia-cublas-cu11 nvidia-cublas-cu12 nvidia-cuda-cupti-cu11 nvidia-cuda-cupti-cu12 \
