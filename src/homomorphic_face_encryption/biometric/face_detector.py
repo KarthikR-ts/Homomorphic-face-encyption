@@ -19,7 +19,8 @@ class FaceDetector:
             margin=20,
             min_face_size=40,
             thresholds=[0.6, 0.7, 0.7],
-            factor=0.709
+            factor=0.709,
+            device='cpu'
         )
 
     def _compute_alignment_angle(self, landmarks: np.ndarray) -> float:

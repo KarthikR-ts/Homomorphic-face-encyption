@@ -1,4 +1,4 @@
-# Core ML
+--extra-index-url https://download.pytorch.org/whl/cpu
 facenet-pytorch
 torch
 torchvision
@@ -39,9 +39,4 @@ gunicorn>=21.0.0
 gevent>=23.0.0
 python-dotenv>=1.0.0
 
-# GPU Acceleration (optional - install based on your CUDA version)
-# cupy-cuda11x>=11.0.0  # For CUDA 11.x
-# cupy-cuda12x>=12.0.0  # For CUDA 12.x
-# pycuda>=2022.1        # Alternative CUDA interface
-# numba>=0.56.0         # CUDA kernel compilation
 
