@@ -8,7 +8,7 @@ description: Deploy the Homomorphic Face Encryption application to Railway (No C
 - **Cost:** FREE ($5/month credit, no credit card needed)
 - **Time:** ~15 minutes
 - **Difficulty:** Easy
-- **Services:** Backend, Frontend, PostgreSQL, Redis all included
+- **Services:** Backend, Frontend, PostgreSQL all included
 
 ---
 
@@ -24,24 +24,22 @@ description: Deploy the Homomorphic Face Encryption application to Railway (No C
 
 ### Step 1: Push Code to GitHub
 
+// turbo
 ```powershell
 # Navigate to project
-cd "c:\Users\Mithil H M\Downloads\Homomorphic-face-encyption"
+cd "z:\DTL_HACKATHON\Homomorphic-face-encyption"
 
-# Initialize git (if not already)
-git init
+# Check git status
+git status
 
 # Add all files
 git add .
 
 # Commit
-git commit -m "Initial commit for Railway deployment"
+git commit -m "Add Railway deployment configuration"
 
-# Create GitHub repo and push
-# (Create repo at github.com first, then:)
-git remote add origin https://github.com/YOUR_USERNAME/homomorphic-face-encryption.git
-git branch -M main
-git push -u origin main
+# Push to GitHub (assuming origin is already set)
+git push origin main
 ```
 
 ### Step 2: Sign Up for Railway
@@ -57,263 +55,207 @@ git push -u origin main
 ### Step 3: Create New Project
 
 1. **Click "New Project"**
-2. **Select "Deploy from GitHub repo"**
-3. **Choose your repository:** `homomorphic-face-encryption`
-4. Railway will detect your Docker setup automatically
+2. **Select "Empty Project"** (we'll add services manually for better control)
 
 ---
 
-### Step 4: Add Database Services
+### Step 4: Add PostgreSQL Database
 
-#### Add PostgreSQL:
 1. Click **"+ New"** → **"Database"** → **"Add PostgreSQL"**
 2. Railway provisions it automatically
-3. Note the connection details (auto-configured)
-
-#### Add Redis:
-1. Click **"+ New"** → **"Database"** → **"Add Redis"**
-2. Railway provisions it automatically
-3. Note the connection details (auto-configured)
+3. The connection details are auto-configured as internal variables
 
 ---
 
-### Step 5: Configure Environment Variables
+### Step 5: Deploy the Backend Service
 
-Click on your **app service** → **"Variables"** tab → Add these:
+1. Click **"+ New"** → **"GitHub Repo"**
+2. **Choose your repository:** `Homomorphic-face-encyption`
+3. In **Settings** tab:
+   - **Root Directory:** Leave empty (uses project root)
+   - **Build Command:** Dockerfile-based (auto-detected)
+   - If prompted, select `Dockerfile.railway`
+
+4. **Add Environment Variables** (Variables tab):
 
 ```env
-# Database (Railway auto-provides these, but verify)
-DATABASE_URL=${{Postgres.DATABASE_URL}}
+# Database (use Railway's reference variables)
 DB_HOST=${{Postgres.PGHOST}}
 DB_PORT=${{Postgres.PGPORT}}
 DB_USER=${{Postgres.PGUSER}}
 DB_PASSWORD=${{Postgres.PGPASSWORD}}
 DB_NAME=${{Postgres.PGDATABASE}}
 
-# Redis
-REDIS_URL=${{Redis.REDIS_URL}}
+# App Config (GENERATE SECURE VALUES!)
+SECRET_KEY=replace-with-32-character-secure-random-string
+JWT_SECRET=replace-with-another-secure-random-string
+DB_ENCRYPTION_KEY=32-character-encryption-key-here
 
-# App Config
-SECRET_KEY=your-secret-key-here-change-this
-JWT_SECRET=your-jwt-secret-here-change-this
+# Flask Configuration
 FLASK_ENV=production
-FLASK_DEBUG=0
+PYTHONPATH=/app/src
 
-# CORS (update after deployment with your Railway URL)
-CORS_ORIGINS=https://your-frontend-url.railway.app
+# CORS (update after frontend deploys)
+CORS_ORIGINS=https://your-frontend.railway.app
 ```
 
----
+5. **Generate Domain:**
+   - Go to **Settings → Networking**
+   - Click **"Generate Domain"**
+   - Copy the URL (e.g., `https://backend-xxxx.railway.app`)
 
-### Step 6: Deploy Backend
-
-Railway automatically deploys when you push to GitHub!
-
-**Monitor deployment:**
-- Click on your service
-- Go to "Deployments" tab
-- Watch the build logs
-
-**Get your backend URL:**
-- Go to "Settings" → "Domains"
-- Click "Generate Domain"
-- You'll get: `https://your-app-name.up.railway.app`
+6. **Deploy** - Railway auto-deploys, or click "Deploy Now"
 
 ---
 
-### Step 7: Deploy Frontend Separately
+### Step 6: Deploy the Frontend Service
 
-**Option A: Create separate service on Railway**
-1. Click "+ New" → "GitHub Repo" → Select your repo again
-2. In settings, set **Root Directory** to `frontend`
-3. Railway detects Vite automatically
-4. Add environment variable:
-   ```env
-   VITE_API_URL=https://your-backend-url.up.railway.app
+1. Click **"+ New"** → **"GitHub Repo"**
+2. **Choose the SAME repository** again
+3. In **Settings** tab:
+   - **Root Directory:** `frontend`
+   - Railway will detect `Dockerfile.railway` in the frontend folder
+
+4. **Add Environment Variables:**
+
+```env
+# Point to your backend service URL from Step 5
+VITE_API_URL=https://your-backend-xxxx.railway.app
+```
+
+5. **Generate Domain:**
+   - Go to **Settings → Networking**
+   - Click **"Generate Domain"**
+   - Copy the URL (e.g., `https://frontend-xxxx.railway.app`)
+
+---
+
+### Step 7: Update Backend CORS
+
+1. Go back to your **Backend service**
+2. Click **Variables** tab
+3. Update `CORS_ORIGINS` to include your frontend URL:
    ```
-
-**Option B: Use Vercel/Netlify for frontend (free)**
-- Deploy frontend to Vercel (faster for React apps)
-- Backend stays on Railway
-- Update CORS_ORIGINS in backend to include Vercel URL
+   CORS_ORIGINS=https://your-frontend-xxxx.railway.app
+   ```
+4. Railway will automatically redeploy
 
 ---
 
-## 🔧 Deployment Files Needed
+## 🔐 Generate Secure Secrets
 
-### Create `railway.toml` in project root:
+Run these commands to generate secure random strings:
 
-```toml
-[build]
-builder = "dockerfile"
-dockerfilePath = "Dockerfile.prod"
+// turbo
+```powershell
+# Generate SECRET_KEY (PowerShell)
+[guid]::NewGuid().ToString().Replace("-","") + [guid]::NewGuid().ToString().Replace("-","")
 
-[deploy]
-startCommand = "gunicorn --bind 0.0.0.0:$PORT --workers 4 'homomorphic_face_encryption.app:create_app()'"
-healthcheckPath = "/api/health"
-healthcheckTimeout = 300
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 10
-```
+# Generate JWT_SECRET
+[Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Maximum 256) }))
 
-### Create `Dockerfile.prod` (if not exists):
-
-```dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
-
-# Copy application
-COPY src ./src
-
-# Set environment
-ENV PYTHONPATH=/app/src
-ENV PORT=8080
-
-# Expose port
-EXPOSE 8080
-
-# Run with gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 4 'homomorphic_face_encryption.app:create_app()'
+# Generate DB_ENCRYPTION_KEY (exactly 32 chars)
+-join ((65..90) + (97..122) + (48..57) | Get-Random -Count 32 | % {[char]$_})
 ```
 
 ---
 
 ## ✅ Post-Deployment Checklist
 
-1. **Test Backend API:**
+1. **Test Backend Health:**
    ```
-   https://your-backend.up.railway.app/api/health
-   ```
-
-2. **Test Token Generation:**
-   ```bash
-   curl -X POST https://your-backend.up.railway.app/api/auth/token \
-     -H "Content-Type: application/json" \
-     -d '{"username":"testuser"}'
+   https://your-backend.railway.app/health
    ```
 
-3. **Update CORS:**
-   - Add frontend URL to `CORS_ORIGINS` in backend environment variables
+2. **Test API Root:**
+   ```
+   https://your-backend.railway.app/
+   ```
 
-4. **Test Frontend:**
+3. **Test Frontend:**
    - Open your frontend URL
-   - Try logging in
-   - Verify all features work
+   - Should display the login/consent interface
 
 ---
 
-## 💰 Cost Monitoring
+## 📁 Railway Configuration Files
 
-**Free Tier: $5/month credit**
+These files have been created in your project:
 
-Estimated usage for this app:
-- Backend: ~$2-3/month
-- PostgreSQL: ~$1/month
-- Redis: ~$0.5/month
-- Frontend (if on Railway): ~$1/month
+### Backend (`Dockerfile.railway`)
+- Optimized Python 3.11 image
+- Includes all ML dependencies
+- Runs with gunicorn
 
-**Total: ~$4.50/month (within free tier!)**
+### Frontend (`frontend/Dockerfile.railway`)
+- Multi-stage Node.js build
+- Serves static files with `serve`
+- Respects Railway's PORT variable
 
-To monitor:
-- Dashboard → Click your project
-- View "Usage" tab
-- Set up billing alerts
+### Procfiles (alternative to Dockerfiles)
+- `Procfile` - Backend process command
+- `frontend/Procfile` - Frontend process command
 
 ---
 
 ## 🐛 Troubleshooting
 
 ### Build Fails
-- Check "Deployments" → "View Logs"
-- Ensure `requirements.txt` has all dependencies
-- Verify `Dockerfile.prod` is correct
+- Click service → **Deployments** → **View Logs**
+- Check if all dependencies are in `requirements.txt`
+- Verify Dockerfile syntax
 
 ### Database Connection Error
-- Verify environment variables are set
-- Check `DATABASE_URL` format
-- Ensure PostgreSQL service is running
+- Ensure PostgreSQL service is in the same project
+- Check environment variables use `${{Postgres.VARIABLE}}` syntax
+- Verify service is running (check for green status)
 
 ### CORS Errors
-- Update `CORS_ORIGINS` to include your frontend URL
-- Restart backend service
+- Update `CORS_ORIGINS` to include exact frontend URL
+- Include `https://` prefix
+- Redeploy backend after changing
 
-### App Won't Start
-- Check logs: Click service → "Deployments" → Latest deployment → "View Logs"
-- Verify `PORT` environment variable is used correctly
-- Check healthcheck is responding
+### Frontend Can't Connect to Backend
+- Verify `VITE_API_URL` is set correctly
+- Ensure backend is deployed and has a public domain
+- Check browser console for specific errors
 
----
-
-## 📚 Useful Commands
-
-### Railway CLI (Optional)
-
-```powershell
-# Install CLI
-npm i -g @railway/cli
-
-# Login
-railway login
-
-# Link to project
-railway link
-
-# View logs
-railway logs
-
-# Deploy
-railway up
-```
+### App Shows "Service Unavailable"
+- Check deployment logs for errors
+- Verify PORT is being respected
+- May need to wait for cold start (first request is slower)
 
 ---
 
-## 🎯 Alternative: Hybrid Deployment (Frontend on Vercel)
+## 💰 Resource Usage
 
-If Railway is slow or you want better frontend performance:
-
-**Frontend: Vercel (Free)**
-1. Push frontend to GitHub
-2. Import to Vercel
-3. Add env: `VITE_API_URL=https://your-backend.railway.app`
-4. Deploy in 2 minutes
-
-**Backend: Railway (Free)**
-1. Deploy backend + database + Redis on Railway
-2. Update CORS to allow Vercel domain
-
-**Advantages:**
-- Faster frontend (Vercel CDN)
-- Railway only runs backend (more free credits last longer)
-- Best of both platforms
+| Service | Estimated Cost |
+|---------|---------------|
+| Backend (Flask + ML) | ~$2-3/month |
+| Frontend (Static) | ~$0.50/month |
+| PostgreSQL | ~$1/month |
+| **Total** | **~$4/month** (within free tier!) |
 
 ---
 
-## ✨ Summary
+## 🔄 Automatic Deployments
 
-**Railway is your best option because:**
-1. ✅ No credit card required
-2. ✅ Hosts everything (backend + database + Redis)
-3. ✅ Docker support (already configured)
-4. ✅ Free $5/month credit
-5. ✅ Easy deployment from GitHub
-6. ✅ Automatic HTTPS
-7. ✅ Simple to use
+Railway automatically deploys when you push to GitHub:
 
-**Estimated Time to Deploy:** 15-20 minutes
+1. Make code changes
+2. `git push origin main`
+3. Railway detects changes
+4. Builds and deploys automatically
 
 ---
 
-**Last Updated:** 2025-12-29
-**Status:** Ready for deployment
+## 📚 Additional Resources
+
+- [Full Railway Documentation](RAILWAY_DEPLOYMENT.md) (in project root)
+- [Railway Official Docs](https://docs.railway.app)
+- [Railway Discord](https://discord.gg/railway)
+
+---
+
+**Last Updated:** 2025-12-30
+**Status:** ✅ Ready for deployment

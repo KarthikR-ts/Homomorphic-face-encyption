@@ -1,0 +1,34 @@
+# Railway Ignore File for Frontend
+# These files will not be included in the deployment
+
+# Development configuration
+eslint.config.js
+.gitignore
+
+# Node modules (rebuilt during build)
+node_modules/
+
+# Source maps
+*.map
+
+# TypeScript definitions
+*.d.ts
+
+# Development files
+*.test.js
+*.test.jsx
+*.spec.js
+*.spec.jsx
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
