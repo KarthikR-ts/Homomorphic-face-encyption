@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 # Copy requirements and constraints
-COPY requirements.txt constraints.txt ./
+COPY requirements.txt .
+COPY constraints.txt .
 
 # Configure PIP constraints file location
 ENV PIP_CONSTRAINT=/build/constraints.txt
