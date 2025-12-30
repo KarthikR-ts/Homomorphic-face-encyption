@@ -328,5 +328,8 @@ def run_development_server():
     )
 
 
+# Expose app for Gunicorn
+app = create_app()
+
 if __name__ == "__main__":
     run_development_server()

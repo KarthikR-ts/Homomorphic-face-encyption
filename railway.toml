@@ -6,7 +6,7 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-startCommand = "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:create_app()"
+startCommand = "sh -c 'gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app'"
 healthcheckPath = "/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
