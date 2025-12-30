@@ -9,14 +9,12 @@ packages = [{include = "homomorphic_face_encryption", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 facenet-pytorch = "*"
-mtcnn = "*"
-opencv-python = "*"
+opencv-python-headless = "*"
 flask = "*"
 flask-jwt-extended = "*"
 sqlalchemy = "*"
 psycopg2-binary = "*"
 numpy = "*"
-scikit-learn = "*"
 pillow = "*"
 # openfhe-python = "*"  # Not available on PyPI, install separately if needed
 cryptography = "^46.0.3"
