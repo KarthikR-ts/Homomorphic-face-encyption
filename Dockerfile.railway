@@ -16,16 +16,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Copy everything in builder stage
+# Copy everything (Root set to / ensures backend files are seen)
 COPY . .
 
-# DEBUG and Install: Combined to ensure log visibility
-RUN echo "--- CURRENT DIRECTORY STRUCTURE ---" && \
-    ls -la && \
-    echo "--- PROJECT ROOT FILES ---" && \
-    ls -la .. 2>/dev/null || true && \
-    echo "--- STARTING INSTALL ---" && \
-    pip install --no-cache-dir --user \
+# Install dependencies in a single, clean layer with Triple-Lock Optimization
+RUN pip install --no-cache-dir --user \
   --extra-index-url https://download.pytorch.org/whl/cpu \
   facenet-pytorch \
   -r requirements.txt \
