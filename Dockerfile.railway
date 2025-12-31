@@ -17,8 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /build
 
-# Copy requirements
-COPY requirements.txt ./
+# Copy requirements (fallback to src/ if root is restricted)
+COPY src/requirements.txt ./
 
 # Install dependencies in a single, clean layer with Triple-Lock Optimization:
 # 1. Use --extra-index-url for CPU-only wheels (so PyPI remains accessible for other packages)
