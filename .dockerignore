@@ -1,8 +1,0 @@
-# Empty dockerignore to ensure all files are visible to Docker context on Railway
-# This helps debug "file not found" errors during COPY steps.
-!requirements.txt
-!constraints.txt
-!src/**
-!Dockerfile.railway
-!railway.toml
-!railway.json
