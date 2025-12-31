@@ -70,6 +70,7 @@ def create_app(config_override: dict = None) -> Flask:
     # =========================================================================
 
     # Base configuration
+    is_development = app.debug or os.getenv("FLASK_ENV") == "development"
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
     
     # JWT Configuration - explicit settings for consistency
@@ -108,6 +109,9 @@ def create_app(config_override: dict = None) -> Flask:
 
     # Encryption configuration
     app.config["DB_ENCRYPTION_KEY"] = os.getenv("DB_ENCRYPTION_KEY")
+
+    # CORS configuration
+    cors_origins = os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else []
 
     # Apply overrides
     if config_override:
@@ -177,7 +181,6 @@ def create_app(config_override: dict = None) -> Flask:
 
     # Initialize security middleware only in production
     # In development, it can interfere with flask_jwt_extended
-    is_development = app.debug or os.getenv("FLASK_ENV") == "development"
     if not is_development:
         security_config = SecurityConfig(
             jwt_secret_key=os.getenv("JWT_SECRET_KEY", "dev-secret-key"),
