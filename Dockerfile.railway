@@ -30,6 +30,8 @@ RUN pip install --no-cache-dir --user \
      nvidia-curand-cu11 nvidia-curand-cu12 nvidia-cusolver-cu11 nvidia-cusolver-cu12 \
      nvidia-cusparse-cu11 nvidia-cusparse-cu12 nvidia-nccl-cu11 nvidia-nccl-cu12 \
      nvidia-nvtx-cu11 nvidia-nvtx-cu12 \
+  # Pre-download the FaceNet model to the user's cache
+  && python -c "from facenet_pytorch import InceptionResnetV1; InceptionResnetV1(pretrained='vggface2').eval()" \
   && find /root/.local -name "__pycache__" -type d -exec rm -rf {} + \
   && find /root/.local -name "*.pyc" -delete
 
@@ -51,8 +53,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /var/cache/apt/*
 
-# Copy Python packages from builder
+# Copy Python packages (including pre-downloaded models) from builder
 COPY --from=builder /root/.local /root/.local
+COPY --from=builder /root/.cache /root/.cache
 ENV PATH=/root/.local/bin:$PATH
 
 # Set working directory
@@ -69,7 +72,9 @@ ENV PYTHONPATH=/app/src:/root/.local/lib/python3.11/site-packages \
   # Disable GPU/CUDA since we're using CPU-only
   CUDA_VISIBLE_DEVICES="" \
   # Reduce memory usage
-  OMP_NUM_THREADS=2
+  OMP_NUM_THREADS=1 \
+  TORCH_NUM_THREADS=1 \
+  MKL_NUM_THREADS=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
@@ -79,4 +84,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 EXPOSE 5000
 
 # Start command - Railway sets $PORT automatically
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app"]
+# Using 1 worker and reduced threads to stay within memory limits
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 1 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app"]
