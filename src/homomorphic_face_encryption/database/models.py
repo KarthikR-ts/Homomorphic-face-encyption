@@ -57,6 +57,15 @@ from .encryption_utils import EncryptedJSONType, PGPEncryptedType
 # Database connection configuration
 def get_database_url() -> str:
     """Build database URL from environment variables."""
+    # 1. Prefer DATABASE_URL (for Railway/Heroku)
+    url = os.getenv("DATABASE_URL")
+    if url:
+        # SQLAlchemy compatibility fix
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        return url
+
+    # 2. Fallback to individual components
     host = os.getenv("DB_HOST", "localhost")
     if host == "sqlite" or host.startswith("sqlite://"):
         # Use SQLite for development/testing

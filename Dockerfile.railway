@@ -62,7 +62,7 @@ WORKDIR /app
 COPY src/ ./src/
 
 # Set environment variables
-ENV PYTHONPATH=/app/src \
+ENV PYTHONPATH=/app/src:/root/.local/lib/python3.11/site-packages \
   PYTHONUNBUFFERED=1 \
   PYTHONDONTWRITEBYTECODE=1 \
   FLASK_ENV=production \
