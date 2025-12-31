@@ -1,5 +1,6 @@
 # =============================================================================
 # Railway-optimized Dockerfile for Frontend (React + Vite)
+# STRATEGY: Copy-Clean-Install-Build to prevent Windows/Linux binary conflicts
 # =============================================================================
 
 # Build stage
@@ -11,16 +12,15 @@ WORKDIR /app
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy source code
+# 1. Copy EVERYTHING from the context (including potential problem files)
 COPY . .
 
-# Build the application
+# 2. BRUTE FORCE CLEAN: Remove any local Windows-based artifacts
+#    This guarantees that the linux container starts fresh
+RUN rm -rf node_modules package-lock.json dist
+
+# 3. Fresh Install & Build
+RUN npm install
 RUN npm run build
 
 # Production stage
@@ -28,7 +28,7 @@ FROM node:20-slim AS production
 
 WORKDIR /app
 
-# Install a simple static file server that supports PORT env var
+# Install a simple static file server
 RUN npm install -g serve
 
 # Copy built files from builder stage
