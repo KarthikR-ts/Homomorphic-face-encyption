@@ -14,12 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   g++ \
   libpq-dev \
   && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
 
-# Copy everything in builder stage (safe because it's discarded later)
+# Copy everything in builder stage
 COPY . .
 
-# DEBUG: List all files to see why requirements.txt is missing
-RUN ls -R /build
+# DEBUG: List all files to see current structure
+RUN ls -R .
 
 # Install dependencies in a single, clean layer with Triple-Lock Optimization:
 # 1. Use --extra-index-url for CPU-only wheels (so PyPI remains accessible for other packages)
