@@ -15,7 +15,10 @@ ENV VITE_API_URL=$VITE_API_URL
 # 1. Copy EVERYTHING from the context (including potential problem files)
 COPY . .
 
-# 2. BRUTE FORCE CLEAN: Remove any local Windows-based artifacts
+# 2. FORCE CACHE MISS: This file changes on every deploy attempt
+COPY cache_bust.txt /tmp/cache_bust.txt
+
+# 3. BRUTE FORCE CLEAN: Remove any local Windows-based artifacts
 #    This guarantees that the linux container starts fresh
 RUN rm -rf node_modules package-lock.json dist
 
