@@ -14,19 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   g++ \
   libpq-dev \
   && rm -rf /var/lib/apt/lists/*
-WORKDIR /build
+WORKDIR /app
 
 # Copy everything in builder stage
 COPY . .
 
-# DEBUG: List all files to see current structure
-RUN ls -R .
-
-# Install dependencies in a single, clean layer with Triple-Lock Optimization:
-# 1. Use --extra-index-url for CPU-only wheels (so PyPI remains accessible for other packages)
-# 2. Explicit --constraint to lock versions
-# 3. Explicit purge of any nvidia/cuda artifacts that might be pulled transitively
-RUN pip install --no-cache-dir --user \
+# DEBUG and Install: Combined to ensure log visibility
+RUN echo "--- CURRENT DIRECTORY STRUCTURE ---" && \
+    ls -la && \
+    echo "--- PROJECT ROOT FILES ---" && \
+    ls -la .. 2>/dev/null || true && \
+    echo "--- STARTING INSTALL ---" && \
+    pip install --no-cache-dir --user \
   --extra-index-url https://download.pytorch.org/whl/cpu \
   facenet-pytorch \
   -r requirements.txt \
