@@ -33,6 +33,9 @@ torch==2.1.0+cpu
 torchvision==0.16.0+cpu
 numpy<2.0.0
 
+# Face recognition
+facenet-pytorch>=2.5.3
+
 # Production server
 gunicorn>=21.0.0
 gevent>=23.0.0
