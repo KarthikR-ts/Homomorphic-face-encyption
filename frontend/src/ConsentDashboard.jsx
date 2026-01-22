@@ -9,6 +9,8 @@ const ConsentDashboard = ({ userId, token }) => {
   const [showRevokeModal, setShowRevokeModal] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+
 
   useEffect(() => {
     fetchDashboardData();
@@ -17,7 +19,8 @@ const ConsentDashboard = ({ userId, token }) => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/consent/dashboard/${userId}`, {
+      const response = await fetch(`${apiUrl}/api/consent/dashboard/${userId}`, {
+
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -63,7 +66,8 @@ const ConsentDashboard = ({ userId, token }) => {
   const handleRevokeConsent = async () => {
     try {
       setActionLoading(true);
-      const response = await fetch('/api/consent/revoke', {
+      const response = await fetch(`${apiUrl}/api/consent/revoke`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +93,8 @@ const ConsentDashboard = ({ userId, token }) => {
   const handleExportData = async () => {
     try {
       setActionLoading(true);
-      const response = await fetch('/api/consent/export-data', {
+      const response = await fetch(`${apiUrl}/api/consent/export-data`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +121,8 @@ const ConsentDashboard = ({ userId, token }) => {
   const handleDeleteBiometricData = async () => {
     try {
       setActionLoading(true);
-      const response = await fetch('/api/consent/delete-biometric-data', {
+      const response = await fetch(`${apiUrl}/api/consent/delete-biometric-data`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

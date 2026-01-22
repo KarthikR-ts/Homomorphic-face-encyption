@@ -44,8 +44,10 @@ const ConsentOnboarding = ({ userId, onComplete }) => {
       }
 
       console.log('Granting consent for user:', userId);
+      const apiUrl = import.meta.env.VITE_API_URL || '';
 
-      const authResponse = await fetch('/api/consent/grant', {
+      const authResponse = await fetch(`${apiUrl}/api/consent/grant`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

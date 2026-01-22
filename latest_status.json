@@ -1,0 +1,234 @@
+﻿{
+  "id": "7c788ac4-9510-46b8-b7bd-38b80898cd56",
+  "name": "dynamic-courage",
+  "deletedAt": null,
+  "workspace": {
+    "name": "karthikr-ts's Projects"
+  },
+  "environments": {
+    "edges": [
+      {
+        "node": {
+          "id": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+          "name": "production",
+          "canAccess": true,
+          "deletedAt": null,
+          "serviceInstances": {
+            "edges": [
+              {
+                "node": {
+                  "id": "331ba6e6-fc54-410c-be90-815e9db15010",
+                  "serviceId": "75f65134-8d44-4b1a-853d-7f88fbd22391",
+                  "serviceName": "Postgres",
+                  "environmentId": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+                  "latestDeployment": {
+                    "canRedeploy": true,
+                    "id": "ef6b0655-c49f-493d-b1ce-dc1923bd5d45",
+                    "meta": {
+                      "image": "ghcr.io/railwayapp-templates/postgres-ssl:17",
+                      "logsV2": true,
+                      "patchId": "9e994965-b857-4867-96ab-4efa88c72641",
+                      "reason": "deploy",
+                      "runtime": "V2",
+                      "serviceManifest": {
+                        "build": {
+                          "buildCommand": null,
+                          "buildEnvironment": null,
+                          "builder": "RAILPACK",
+                          "dockerfilePath": null,
+                          "nixpacksConfigPath": null,
+                          "nixpacksPlan": null,
+                          "watchPatterns": []
+                        },
+                        "deploy": {
+                          "cronSchedule": null,
+                          "drainingSeconds": null,
+                          "healthcheckPath": null,
+                          "healthcheckTimeout": null,
+                          "limitOverride": null,
+                          "multiRegionConfig": {
+                            "us-west2": {
+                              "numReplicas": 1
+                            }
+                          },
+                          "numReplicas": 1,
+                          "overlapSeconds": null,
+                          "preDeployCommand": null,
+                          "region": null,
+                          "registryCredentials": null,
+                          "requiredMountPath": "/var/lib/postgresql/data",
+                          "restartPolicyMaxRetries": 10,
+                          "restartPolicyType": "ON_FAILURE",
+                          "runtime": "V2",
+                          "sleepApplication": false,
+                          "startCommand": null,
+                          "useLegacyStacker": false
+                        }
+                      },
+                      "volumeMounts": [
+                        "/var/lib/postgresql/data"
+                      ]
+                    },
+                    "status": "SUCCESS",
+                    "createdAt": "2025-12-31T05:55:41.021Z",
+                    "deploymentStopped": false
+                  },
+                  "source": {
+                    "repo": null,
+                    "image": "ghcr.io/railwayapp-templates/postgres-ssl:17"
+                  },
+                  "domains": {
+                    "serviceDomains": [],
+                    "customDomains": []
+                  },
+                  "cronSchedule": null,
+                  "nextCronRunAt": null,
+                  "startCommand": null
+                }
+              },
+              {
+                "node": {
+                  "id": "51cebe08-41e9-41de-908f-b21694b78f64",
+                  "serviceId": "7fd279d7-1180-4379-9319-4416346635d0",
+                  "serviceName": "web",
+                  "environmentId": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+                  "latestDeployment": {
+                    "canRedeploy": true,
+                    "id": "a0ad5b5c-5f47-41f5-a6cd-f0e161e93383",
+                    "meta": {
+                      "branch": "main",
+                      "buildOnly": false,
+                      "commitAuthor": "KarthikR-ts",
+                      "commitHash": "c7fa74be66391972a7e29a4183cf23650f04da3b",
+                      "commitMessage": "Fix: Force remove local artifact files inside Docker to ensure clean linux build",
+                      "configFile": "railway.toml",
+                      "fileServiceManifest": {
+                        "build": {
+                          "builder": "DOCKERFILE",
+                          "dockerfilePath": "Dockerfile.railway"
+                        },
+                        "deploy": {
+                          "healthcheckPath": "/health",
+                          "healthcheckTimeout": 120,
+                          "restartPolicyMaxRetries": 5,
+                          "restartPolicyType": "ON_FAILURE",
+                          "startCommand": "sh -c 'gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app'"
+                        }
+                      },
+                      "logsV2": true,
+                      "nixpacksProviders": [
+                        "python"
+                      ],
+                      "propertyFileMapping": {
+                        "build.builder": "$.build.builder",
+                        "build.dockerfilePath": "$.build.dockerfilePath",
+                        "deploy.healthcheckPath": "$.deploy.healthcheckPath",
+                        "deploy.healthcheckTimeout": "$.deploy.healthcheckTimeout",
+                        "deploy.restartPolicyMaxRetries": "$.deploy.restartPolicyMaxRetries",
+                        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+                        "deploy.startCommand": "$.deploy.startCommand"
+                      },
+                      "reason": "deploy",
+                      "repo": "KarthikR-ts/Homomorphic-face-encyption",
+                      "rootDirectory": "",
+                      "runtime": "V2",
+                      "serviceManifest": {
+                        "build": {
+                          "buildCommand": null,
+                          "buildEnvironment": null,
+                          "builder": "DOCKERFILE",
+                          "dockerfilePath": "Dockerfile.railway",
+                          "nixpacksConfigPath": null,
+                          "nixpacksPlan": null,
+                          "watchPatterns": []
+                        },
+                        "deploy": {
+                          "cronSchedule": null,
+                          "drainingSeconds": null,
+                          "healthcheckPath": "/health",
+                          "healthcheckTimeout": 120,
+                          "limitOverride": null,
+                          "multiRegionConfig": {
+                            "us-west2": {
+                              "numReplicas": 1
+                            }
+                          },
+                          "numReplicas": 1,
+                          "overlapSeconds": null,
+                          "preDeployCommand": null,
+                          "region": null,
+                          "registryCredentials": null,
+                          "requiredMountPath": null,
+                          "restartPolicyMaxRetries": 5,
+                          "restartPolicyType": "ON_FAILURE",
+                          "runtime": "V2",
+                          "sleepApplication": false,
+                          "startCommand": "sh -c 'gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app'",
+                          "useLegacyStacker": false
+                        }
+                      },
+                      "volumeMounts": []
+                    },
+                    "status": "SUCCESS",
+                    "createdAt": "2025-12-31T06:51:53.201Z",
+                    "deploymentStopped": false
+                  },
+                  "source": {
+                    "repo": "KarthikR-ts/Homomorphic-face-encyption",
+                    "image": null
+                  },
+                  "domains": {
+                    "serviceDomains": [
+                      {
+                        "id": "80d50813-db6e-4c6a-a262-d2a47e6a010e",
+                        "domain": "web-production-731b.up.railway.app",
+                        "targetPort": null
+                      }
+                    ],
+                    "customDomains": []
+                  },
+                  "cronSchedule": null,
+                  "nextCronRunAt": null,
+                  "startCommand": "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 homomorphic_face_encryption.app:create_app()"
+                }
+              }
+            ]
+          },
+          "volumeInstances": {
+            "edges": [
+              {
+                "node": {
+                  "serviceId": "75f65134-8d44-4b1a-853d-7f88fbd22391",
+                  "mountPath": "/var/lib/postgresql/data",
+                  "environmentId": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+                  "currentSizeMB": 96.845824,
+                  "sizeMB": 500,
+                  "volume": {
+                    "name": "postgres-volume",
+                    "id": "7d9eb94b-1560-427a-b6a8-818ffec8594d"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "services": {
+    "edges": [
+      {
+        "node": {
+          "id": "75f65134-8d44-4b1a-853d-7f88fbd22391",
+          "name": "Postgres"
+        }
+      },
+      {
+        "node": {
+          "id": "7fd279d7-1180-4379-9319-4416346635d0",
+          "name": "web"
+        }
+      }
+    ]
+  }
+}

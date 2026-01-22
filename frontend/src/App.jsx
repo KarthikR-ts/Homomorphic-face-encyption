@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 import Button from './components/Button';
 import AnimatedBackground from './components/AnimatedBackground';
 import ConsentOnboarding from './ConsentOnboarding';
 import ConsentDashboard from './ConsentDashboard';
+import DemoMode from './components/DemoMode';
 
 // SVG Icons as components with enhanced styling
 const ShieldIcon = () => (
@@ -62,15 +64,24 @@ const ScanIcon = () => (
   </svg>
 );
 
+const PlayIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+
 const App = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [activeTab, setActiveTab] = useState('dashboard');
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+
   const [isScanning, setIsScanning] = useState(false);
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const [needsConsent, setNeedsConsent] = useState(false);
   const [hasConsent, setHasConsent] = useState(false);
+  const [showDemoMode, setShowDemoMode] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -88,7 +99,8 @@ const App = () => {
         const userData = JSON.parse(storedUser);
         setUser(userData);
 
-        const consentCheck = await fetch(`/api/consent/verify/${userData.id}/AUTHENTICATION`, {
+        const consentCheck = await fetch(`${apiUrl}/api/consent/verify/${userData.id}/AUTHENTICATION`, {
+
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -109,7 +121,8 @@ const App = () => {
     e.preventDefault();
     const username = e.target.username.value;
     try {
-      const resp = await fetch('/api/auth/token', {
+      const resp = await fetch(`${apiUrl}/api/auth/token`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
@@ -190,8 +203,9 @@ const App = () => {
     const imageData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
     try {
-      const endpoint = activeTab === 'enroll' ? '/api/register' : '/api/verify';
+      const endpoint = activeTab === 'enroll' ? `${apiUrl}/api/register` : `${apiUrl}/api/verify`;
       const resp = await fetch(endpoint, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -353,6 +367,13 @@ const App = () => {
           >
             <SettingsIcon /> Privacy Center
           </div>
+          <div
+            className={`nav-item ${activeTab === 'demo' ? 'active' : ''}`}
+            onClick={() => { stopScanner(); setActiveTab('demo'); setShowDemoMode(true); }}
+            style={{ marginTop: '1rem' }}
+          >
+            <PlayIcon /> Demo Mode
+          </div>
         </nav>
         <div style={{ marginTop: 'auto' }}>
           <div
@@ -422,6 +443,9 @@ const App = () => {
                 </Button>
                 <Button variant="ghost" onClick={() => setActiveTab('privacy')}>
                   ⚙️ Privacy Settings
+                </Button>
+                <Button variant="gradient" onClick={() => { setActiveTab('demo'); setShowDemoMode(true); }}>
+                  🎬 Security Demo
                 </Button>
               </div>
             </div>
@@ -629,7 +653,51 @@ const App = () => {
         {activeTab === 'privacy' && (
           <ConsentDashboard userId={user?.id} token={token} />
         )}
+
+        {/* Demo Mode */}
+        {activeTab === 'demo' && (
+          <div className="portal-view">
+            <DemoMode onClose={() => { setShowDemoMode(false); setActiveTab('dashboard'); }} />
+          </div>
+        )}
       </main>
+
+      {/* Demo Mode Modal Overlay */}
+      <AnimatePresence>
+        {showDemoMode && activeTab !== 'demo' && (
+          <motion.div
+            className="demo-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowDemoMode(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '2rem'
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: '1000px', width: '100%' }}
+            >
+              <DemoMode onClose={() => setShowDemoMode(false)} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

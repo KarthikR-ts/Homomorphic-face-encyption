@@ -1,0 +1,631 @@
+﻿Starting Container
+[2025-12-31 06:11:42 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:11:42 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:11:42 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:11:42 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:11:42 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+2025-12-31 06:11:47,149 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:11:47,150 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:11:47,150 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:11:47,150 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:11:47,155 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:11:47,155 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+[2025-12-31 06:11:47 +0000] [4] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.callable = self.load()
+    self.wsgi = self.app.wsgi()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+[2025-12-31 06:11:47 +0000] [4] [INFO] Worker exiting (pid: 4)
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    app = create_app()
+          ^^^^^^^^^^^^
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+2025-12-31 06:11:47,524 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:11:47,525 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:11:47,525 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:11:47,525 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:11:47,530 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:11:47,530 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+[2025-12-31 06:11:47 +0000] [3] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:11:47 +0000] [3] [INFO] Worker exiting (pid: 3)
+[2025-12-31 06:11:47 +0000] [2] [ERROR] Worker (pid:4) exited with code 3
+[2025-12-31 06:11:47 +0000] [2] [ERROR] Worker (pid:3) was sent SIGTERM!
+[2025-12-31 06:11:47 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:11:47 +0000] [2] [ERROR] Reason: Worker failed to boot.
+[2025-12-31 06:11:48 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:11:48 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:11:48 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:11:48 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:11:48 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+2025-12-31 06:11:53,828 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:11:53,829 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:11:53,829 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:11:53,829 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:11:53,834 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:11:53,834 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+[2025-12-31 06:11:53 +0000] [3] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    self.load_wsgi()
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    if is_development:
+    mod = importlib.import_module(module)
+       ^^^^^^^^^^^^^^
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+[2025-12-31 06:11:53 +0000] [3] [INFO] Worker exiting (pid: 3)
+2025-12-31 06:11:53,990 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+2025-12-31 06:11:53,991 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+2025-12-31 06:11:53,991 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:11:53,992 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:11:53,997 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:11:53,997 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+[2025-12-31 06:11:53 +0000] [4] [ERROR] Exception in worker process
+Traceback (most recent call last):
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    app = create_app()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+          ^^^^^^^^^^^^
+    mod = importlib.import_module(module)
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+       ^^^^^^^^^^^^^^
+    return _bootstrap._gcd_import(name[level:], package, level)
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-12-31 06:11:53 +0000] [4] [INFO] Worker exiting (pid: 4)
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+[2025-12-31 06:11:54 +0000] [2] [ERROR] Worker (pid:3) exited with code 3
+[2025-12-31 06:11:54 +0000] [2] [ERROR] Worker (pid:4) was sent SIGTERM!
+[2025-12-31 06:11:54 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:11:54 +0000] [2] [ERROR] Reason: Worker failed to boot.
+[2025-12-31 06:11:55 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:11:55 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:11:55 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:11:55 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:11:55 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+[2025-12-31 06:12:00 +0000] [3] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+2025-12-31 06:12:00,799 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+2025-12-31 06:12:00,801 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:00,801 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+    self.wsgi = self.app.wsgi()
+2025-12-31 06:12:00,801 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+                ^^^^^^^^^^^^^^^
+2025-12-31 06:12:00,806 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+2025-12-31 06:12:00,806 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:12:00 +0000] [3] [INFO] Worker exiting (pid: 3)
+2025-12-31 06:12:00,944 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:00,945 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:00,945 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:00,945 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:12:00,951 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+                    ^^^^^^^^^^^
+2025-12-31 06:12:00,951 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+[2025-12-31 06:12:00 +0000] [4] [ERROR] Exception in worker process
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    return self.load_wsgiapp()
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+           ^^^^^^^^^^^^^^^^^^^
+    self.load_wsgi()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+    return util.import_app(self.app_uri)
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+    mod = importlib.import_module(module)
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    return _bootstrap._gcd_import(name[level:], package, level)
+    app = create_app()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+          ^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:12:00 +0000] [4] [INFO] Worker exiting (pid: 4)
+[2025-12-31 06:12:01 +0000] [2] [ERROR] Worker (pid:3) exited with code 3
+[2025-12-31 06:12:01 +0000] [2] [ERROR] Worker (pid:4) was sent SIGTERM!
+[2025-12-31 06:12:01 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:12:01 +0000] [2] [ERROR] Reason: Worker failed to boot.
+[2025-12-31 06:12:02 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:12:02 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:12:02 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:12:02 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:12:02 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+2025-12-31 06:12:07,713 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:07,714 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:07,714 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:07,715 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:12:07,719 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:12:07,719 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+    return util.import_app(self.app_uri)
+[2025-12-31 06:12:07 +0000] [3] [ERROR] Exception in worker process
+                ^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    mod = importlib.import_module(module)
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    self.load_wsgi()
+    return self.load_wsgiapp()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:12:07 +0000] [3] [INFO] Worker exiting (pid: 3)
+2025-12-31 06:12:07,923 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:07,924 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:07,924 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:07,924 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:12:07,929 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+2025-12-31 06:12:07,930 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+    return self.load_wsgiapp()
+[2025-12-31 06:12:07 +0000] [4] [ERROR] Exception in worker process
+           ^^^^^^^^^^^^^^^^^^^
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+    return util.import_app(self.app_uri)
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    app = create_app()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+          ^^^^^^^^^^^^
+    mod = importlib.import_module(module)
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    if is_development:
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+       ^^^^^^^^^^^^^^
+    return _bootstrap._gcd_import(name[level:], package, level)
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+[2025-12-31 06:12:07 +0000] [4] [INFO] Worker exiting (pid: 4)
+[2025-12-31 06:12:08 +0000] [2] [ERROR] Worker (pid:3) exited with code 3
+[2025-12-31 06:12:08 +0000] [2] [ERROR] Worker (pid:4) was sent SIGTERM!
+[2025-12-31 06:12:08 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:12:08 +0000] [2] [ERROR] Reason: Worker failed to boot.
+[2025-12-31 06:12:09 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:12:09 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:12:09 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:12:09 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:12:09 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+2025-12-31 06:12:14,691 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:14,692 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:14,692 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:14,692 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+2025-12-31 06:12:14,697 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:12:14,697 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+    return util.import_app(self.app_uri)
+[2025-12-31 06:12:14 +0000] [3] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:12:14 +0000] [3] [INFO] Worker exiting (pid: 3)
+2025-12-31 06:12:14,848 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:14,849 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:14,849 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:14,849 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+    return util.import_app(self.app_uri)
+    self.wsgi = self.app.wsgi()
+    return self.load_wsgiapp()
+2025-12-31 06:12:14,854 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+           ^^^^^^^^^^^^^^^^^^^
+                ^^^^^^^^^^^^^^^
+2025-12-31 06:12:14,854 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+[2025-12-31 06:12:14 +0000] [4] [ERROR] Exception in worker process
+    self.callable = self.load()
+Traceback (most recent call last):
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+[2025-12-31 06:12:14 +0000] [4] [INFO] Worker exiting (pid: 4)
+[2025-12-31 06:12:15 +0000] [2] [ERROR] Worker (pid:3) exited with code 3
+[2025-12-31 06:12:15 +0000] [2] [ERROR] Worker (pid:4) was sent SIGTERM!
+[2025-12-31 06:12:15 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:12:15 +0000] [2] [ERROR] Reason: Worker failed to boot.
+[2025-12-31 06:12:16 +0000] [2] [INFO] Starting gunicorn 23.0.0
+[2025-12-31 06:12:16 +0000] [2] [INFO] Listening at: http://0.0.0.0:8080 (2)
+[2025-12-31 06:12:16 +0000] [2] [INFO] Using worker: sync
+[2025-12-31 06:12:16 +0000] [3] [INFO] Booting worker with pid: 3
+[2025-12-31 06:12:16 +0000] [4] [INFO] Booting worker with pid: 4
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_multikey_encryptor.py:36: RuntimeWarning: OpenFHE not available. MultiKeyCKKSEncryptor will run in mock mode.
+  warnings.warn(
+/app/src/homomorphic_face_encryption/crypto/ckks_encryptor.py:22: RuntimeWarning: OpenFHE not available. CKKSEncryptor will run in mock mode. Install openfhe-python for production use.
+  warnings.warn(
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+2025-12-31 06:12:21,488 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+                ^^^^^^^^^^^^^^^
+2025-12-31 06:12:21,489 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+2025-12-31 06:12:21,489 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+    self.callable = self.load()
+2025-12-31 06:12:21,489 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+2025-12-31 06:12:21,494 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+2025-12-31 06:12:21,495 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+[2025-12-31 06:12:21 +0000] [4] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+                    ^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+    return self.load_wsgiapp()
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+    return util.import_app(self.app_uri)
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+    mod = importlib.import_module(module)
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    app = create_app()
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+       ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+[2025-12-31 06:12:21 +0000] [4] [INFO] Worker exiting (pid: 4)
+2025-12-31 06:12:21,545 - homomorphic_face_encryption.app - INFO - Environment variables loaded from .env file
+2025-12-31 06:12:21,546 - homomorphic_face_encryption.app - INFO - JWT configured with secret starting with: your-jwt-secret...
+2025-12-31 06:12:21,546 - homomorphic_face_encryption.app - INFO - Using DATABASE_URL for connection
+2025-12-31 06:12:21,546 - homomorphic_face_encryption.app - INFO - JWT Manager initialized
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+2025-12-31 06:12:21,551 - homomorphic_face_encryption.app - WARNING - Redis connection failed: Error 111 connecting to localhost:6379. Connection refused.. Caching disabled.
+    return util.import_app(self.app_uri)
+2025-12-31 06:12:21,551 - homomorphic_face_encryption.api.consent_middleware - INFO - Consent middleware initialized
+    self.load_wsgi()
+[2025-12-31 06:12:21 +0000] [3] [ERROR] Exception in worker process
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+                    ^^^^^^^^^^^
+    worker.init_process()
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+       ^^^^^^^^^^^^^^
+    mod = importlib.import_module(module)
+UnboundLocalError: cannot access local variable 'is_development' where it is not associated with a value
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "/app/src/homomorphic_face_encryption/app.py", line 340, in <module>
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+    app = create_app()
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+          ^^^^^^^^^^^^
+  File "/app/src/homomorphic_face_encryption/app.py", line 173, in create_app
+    if is_development:
+[2025-12-31 06:12:21 +0000] [3] [INFO] Worker exiting (pid: 3)
+[2025-12-31 06:12:22 +0000] [2] [ERROR] Worker (pid:4) exited with code 3
+[2025-12-31 06:12:22 +0000] [2] [ERROR] Worker (pid:3) was sent SIGTERM!
+[2025-12-31 06:12:22 +0000] [2] [ERROR] Shutting down: Master
+[2025-12-31 06:12:22 +0000] [2] [ERROR] Reason: Worker failed to boot.

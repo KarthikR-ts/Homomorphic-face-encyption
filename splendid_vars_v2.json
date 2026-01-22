@@ -1,0 +1,13 @@
+﻿{
+  "RAILWAY_ENVIRONMENT": "production",
+  "RAILWAY_ENVIRONMENT_ID": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+  "RAILWAY_ENVIRONMENT_NAME": "production",
+  "RAILWAY_PRIVATE_DOMAIN": "web.railway.internal",
+  "RAILWAY_PROJECT_ID": "7c788ac4-9510-46b8-b7bd-38b80898cd56",
+  "RAILWAY_PROJECT_NAME": "dynamic-courage",
+  "RAILWAY_PUBLIC_DOMAIN": "web-production-731b.up.railway.app",
+  "RAILWAY_SERVICE_ID": "7fd279d7-1180-4379-9319-4416346635d0",
+  "RAILWAY_SERVICE_NAME": "web",
+  "RAILWAY_SERVICE_WEB_URL": "web-production-731b.up.railway.app",
+  "RAILWAY_STATIC_URL": "web-production-731b.up.railway.app"
+}

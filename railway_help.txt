@@ -1,0 +1,42 @@
+﻿Interact with Railway via CLI
+
+Usage: railway.exe [COMMAND]
+
+Commands:
+  add            Add a service to your project
+  completion     Generate completion script
+  connect        Connect to a database's shell (psql for Postgres, mongosh for MongoDB, etc.)
+  deploy         Provisions a template into your project
+  deployment     Manage deployments
+  dev            Run Railway services locally [aliases: develop]
+  domain         Add a custom domain or generate a railway provided domain for a service
+  docs           Open Railway Documentation in default browser
+  down           Remove the most recent deployment
+  environment    Create, delete or link an environment [aliases: env]
+  init           Create a new project
+  link           Associate existing project with current directory, may specify projectId as an argument
+  list           List all projects in your Railway account
+  login          Login to your Railway account
+  logout         Logout of your Railway account
+  logs           View build or deploy logs from a Railway deployment
+  open           Open your project dashboard
+  run            Run a local command using variables from the active environment
+  service        Manage services
+  shell          Open a local subshell with Railway variables available
+  ssh            Connect to a service via SSH
+  status         Show information about the current project
+  unlink         Disassociate project from current directory
+  up             Upload and deploy project from the current directory
+  variables      Show variables for active environment
+  whoami         Get the current logged in user
+  volume         Manage project volumes
+  redeploy       Redeploy the latest deployment of a service
+  scale          
+  check_updates  Test the update check
+  functions      Manage project functions [aliases: function, func, fn, funcs, fns]
+  help           Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+

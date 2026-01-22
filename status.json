@@ -1,0 +1,146 @@
+﻿{
+  "id": "7c788ac4-9510-46b8-b7bd-38b80898cd56",
+  "name": "dynamic-courage",
+  "deletedAt": null,
+  "workspace": {
+    "name": "karthikr-ts's Projects"
+  },
+  "environments": {
+    "edges": [
+      {
+        "node": {
+          "id": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+          "name": "production",
+          "canAccess": true,
+          "deletedAt": null,
+          "serviceInstances": {
+            "edges": [
+              {
+                "node": {
+                  "id": "51cebe08-41e9-41de-908f-b21694b78f64",
+                  "serviceId": "7fd279d7-1180-4379-9319-4416346635d0",
+                  "serviceName": "web",
+                  "environmentId": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+                  "latestDeployment": {
+                    "canRedeploy": true,
+                    "id": "cadf764a-4ab3-4967-858d-0b9a0bc983a6",
+                    "meta": {
+                      "branch": "main",
+                      "buildOnly": false,
+                      "commitAuthor": "KarthikR-ts",
+                      "commitHash": "419b96cd38f1357b25e6efae98eda4c77cba6536",
+                      "commitMessage": "Chore: clean up debug logs and restore optimized build structure",
+                      "configFile": "railway.toml",
+                      "fileServiceManifest": {
+                        "build": {
+                          "builder": "DOCKERFILE",
+                          "dockerfilePath": "Dockerfile.railway"
+                        },
+                        "deploy": {
+                          "healthcheckPath": "/health",
+                          "healthcheckTimeout": 30,
+                          "restartPolicyMaxRetries": 5,
+                          "restartPolicyType": "ON_FAILURE",
+                          "startCommand": "sh -c 'gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app'"
+                        }
+                      },
+                      "ignoreWatchPatterns": true,
+                      "isPublicRepoDeploy": true,
+                      "logsV2": true,
+                      "nixpacksProviders": [
+                        "python"
+                      ],
+                      "patchId": "8bfd6cbf-9162-4215-8388-fd2d90728eba",
+                      "propertyFileMapping": {
+                        "build.builder": "$.build.builder",
+                        "build.dockerfilePath": "$.build.dockerfilePath",
+                        "deploy.healthcheckPath": "$.deploy.healthcheckPath",
+                        "deploy.healthcheckTimeout": "$.deploy.healthcheckTimeout",
+                        "deploy.restartPolicyMaxRetries": "$.deploy.restartPolicyMaxRetries",
+                        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+                        "deploy.startCommand": "$.deploy.startCommand"
+                      },
+                      "reason": "deploy",
+                      "repo": "KarthikR-ts/Homomorphic-face-encyption",
+                      "rootDirectory": "",
+                      "runtime": "V2",
+                      "serviceManifest": {
+                        "build": {
+                          "buildCommand": null,
+                          "buildEnvironment": null,
+                          "builder": "DOCKERFILE",
+                          "dockerfilePath": "Dockerfile.railway",
+                          "nixpacksConfigPath": null,
+                          "nixpacksPlan": null,
+                          "watchPatterns": []
+                        },
+                        "deploy": {
+                          "cronSchedule": null,
+                          "drainingSeconds": null,
+                          "healthcheckPath": "/health",
+                          "healthcheckTimeout": 30,
+                          "limitOverride": null,
+                          "multiRegionConfig": {
+                            "us-west2": {
+                              "numReplicas": 1
+                            }
+                          },
+                          "numReplicas": 1,
+                          "overlapSeconds": null,
+                          "preDeployCommand": null,
+                          "region": null,
+                          "registryCredentials": null,
+                          "requiredMountPath": null,
+                          "restartPolicyMaxRetries": 5,
+                          "restartPolicyType": "ON_FAILURE",
+                          "runtime": "V2",
+                          "sleepApplication": false,
+                          "startCommand": "sh -c 'gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --keep-alive 5 homomorphic_face_encryption.app:app'",
+                          "useLegacyStacker": false
+                        }
+                      },
+                      "volumeMounts": []
+                    },
+                    "status": "FAILED",
+                    "createdAt": "2025-12-31T05:40:25.337Z",
+                    "deploymentStopped": true
+                  },
+                  "source": {
+                    "repo": "KarthikR-ts/Homomorphic-face-encyption",
+                    "image": null
+                  },
+                  "domains": {
+                    "serviceDomains": [
+                      {
+                        "id": "80d50813-db6e-4c6a-a262-d2a47e6a010e",
+                        "domain": "web-production-731b.up.railway.app",
+                        "targetPort": null
+                      }
+                    ],
+                    "customDomains": []
+                  },
+                  "cronSchedule": null,
+                  "nextCronRunAt": null,
+                  "startCommand": "gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 homomorphic_face_encryption.app:create_app()"
+                }
+              }
+            ]
+          },
+          "volumeInstances": {
+            "edges": []
+          }
+        }
+      }
+    ]
+  },
+  "services": {
+    "edges": [
+      {
+        "node": {
+          "id": "7fd279d7-1180-4379-9319-4416346635d0",
+          "name": "web"
+        }
+      }
+    ]
+  }
+}

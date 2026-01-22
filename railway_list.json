@@ -1,0 +1,76 @@
+﻿[
+  {
+    "id": "7c788ac4-9510-46b8-b7bd-38b80898cd56",
+    "name": "dynamic-courage",
+    "createdAt": "2025-12-30T18:33:26.581Z",
+    "updatedAt": "2025-12-31T04:54:07.303Z",
+    "deletedAt": null,
+    "environments": {
+      "edges": [
+        {
+          "node": {
+            "id": "be904555-ef96-4f43-ba2f-98d645fe4fd1",
+            "name": "production",
+            "canAccess": true,
+            "serviceInstances": {
+              "edges": [
+                {
+                  "node": {
+                    "serviceId": "7fd279d7-1180-4379-9319-4416346635d0"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "services": {
+      "edges": [
+        {
+          "node": {
+            "id": "7fd279d7-1180-4379-9319-4416346635d0",
+            "name": "web"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "86961b88-1efe-481e-b560-aeb54219c1e8",
+    "name": "splendid-truth",
+    "createdAt": "2025-12-30T20:03:01.394Z",
+    "updatedAt": "2025-12-31T04:46:43.774Z",
+    "deletedAt": null,
+    "environments": {
+      "edges": [
+        {
+          "node": {
+            "id": "8aa6503e-9c4a-4480-afd5-de103e861771",
+            "name": "production",
+            "canAccess": true,
+            "serviceInstances": {
+              "edges": [
+                {
+                  "node": {
+                    "serviceId": "3672d408-6f06-4e04-94d3-6cc06bbcf6bf"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "services": {
+      "edges": [
+        {
+          "node": {
+            "id": "3672d408-6f06-4e04-94d3-6cc06bbcf6bf",
+            "name": "web"
+          }
+        }
+      ]
+    }
+  }
+]
